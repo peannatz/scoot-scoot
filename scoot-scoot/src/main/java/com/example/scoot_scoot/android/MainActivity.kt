@@ -1,6 +1,7 @@
 package com.example.scoot_scoot.android
 
 import android.os.Bundle
+import android.transition.Scene
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.scoot_scoot.android.Dashboard.Dashboard
+import com.example.scoot_scoot.android.Map.Map
 import com.example.scoot_scoot.android.SplashScreen.SplashScreen
 import com.google.maps.android.compose.GoogleMap
 
@@ -47,6 +49,7 @@ fun Navigation() {
             SplashScreen(navController)
         }
         composable(Screens.Dashboard) { Dashboard(navController) }
+        composable(Screens.Map) { Map(navController) }
     }
 
 }
