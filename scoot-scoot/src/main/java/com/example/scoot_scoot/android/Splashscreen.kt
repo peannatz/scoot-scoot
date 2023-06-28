@@ -45,7 +45,7 @@ object SplashScreen {
             val isVisible = remember { mutableStateOf(true) }
             AnimatedVisibility(
                 visible = isVisible.value,
-                exit = slideOut(targetOffset = { IntOffset(1000, 0) })
+                exit = slideOut(targetOffset = { IntOffset(1200, 0) })
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_scooter),
