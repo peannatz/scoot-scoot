@@ -50,23 +50,28 @@ import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.Scooter
 import com.example.scoot_scoot.android.SharedViewModel
 import com.google.maps.android.compose.GoogleMap
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 object MapScreen {
+
+    private lateinit var coroutineScope: CoroutineScope
+    private lateinit var model: SharedViewModel
+
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun MapScreen(navController: NavController) {
         var bottomSheetContent: (@Composable () -> Unit)? by remember {
             mutableStateOf(null)
         }
-        val coroutineScope = rememberCoroutineScope()
-        val model: SharedViewModel = viewModel()
+        coroutineScope = rememberCoroutineScope()
+        model = viewModel()
 
         val toggleBottomSheet: () -> Unit = {
             if (model.updateScooterInfo){
-                bottomSheetContent = { UpdateScooterInfoInBottomSheet(model = model) }
+                bottomSheetContent = { UpdateScooterInfoInBottomSheet() }
             }
             if (model.sheetState.isVisible && !model.updateScooterInfo) {
                 coroutineScope.launch { model.sheetState.hide() }
@@ -88,179 +93,179 @@ object MapScreen {
                 onMapClick = { toggleBottomSheet() })
         }
     }
-}
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun PrepareBottomSheet(
-    bottomSheetContent: @Composable() (() -> Unit)?
-) {
-    val model: SharedViewModel = viewModel()
-    val modalSheetState = model.sheetState
-    ModalBottomSheetLayout(
-        sheetState = modalSheetState,
-        sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-        sheetBackgroundColor = MaterialTheme.colors.background,
-        scrimColor = Color.Unspecified,
-        sheetContent = {
-            bottomSheetContent?.let { it() }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun PrepareBottomSheet(
+        bottomSheetContent: @Composable() (() -> Unit)?
+    ) {
+        val modalSheetState = model.sheetState
+        ModalBottomSheetLayout(
+            sheetState = modalSheetState,
+            sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+            sheetBackgroundColor = MaterialTheme.colors.background,
+            scrimColor = Color.Unspecified,
+            sheetContent = {
+                bottomSheetContent?.let { it() }
+            }
+        ) {
         }
-    ) {
     }
-}
 
-@Composable
-fun UpdateScooterInfoInBottomSheet(model: SharedViewModel) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(horizontal = 40.dp, vertical = 20.dp)
-            .fillMaxWidth()
-    ) {
-        Text(text = model.selectedScooter.description, fontSize = 30.sp)
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
+    @Composable
+    fun UpdateScooterInfoInBottomSheet() {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .padding(horizontal = 40.dp, vertical = 20.dp)
                 .fillMaxWidth()
-                .padding(top = 10.dp)
         ) {
-            Text(text = "minute price")
-            Text(text = "km price")
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = model.selectedScooter.priceMin.setScale(2, RoundingMode.HALF_EVEN)
-                    .toString(),
-                fontSize = 15.sp
-            )
-            Text(
-                text = model.selectedScooter.priceKm.setScale(2, RoundingMode.HALF_EVEN).toString(),
-                fontSize = 15.sp
-            )
-        }
-        val name = "s" + model.selectedScooter.id.toString()
-        val context = LocalContext.current
-        val drawableId = remember(name) {
-            context.resources.getIdentifier(
-                name,
-                "drawable",
-                context.packageName
-            )
-        }
+            Text(text = model.selectedScooter.description, fontSize = 30.sp)
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+            ) {
+                Text(text = "minute price")
+                Text(text = "km price")
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = model.selectedScooter.priceMin.setScale(2, RoundingMode.HALF_EVEN)
+                        .toString(),
+                    fontSize = 15.sp
+                )
+                Text(
+                    text = model.selectedScooter.priceKm.setScale(2, RoundingMode.HALF_EVEN).toString(),
+                    fontSize = 15.sp
+                )
+            }
+            val name = "s" + model.selectedScooter.id.toString()
+            val context = LocalContext.current
+            val drawableId = remember(name) {
+                context.resources.getIdentifier(
+                    name,
+                    "drawable",
+                    context.packageName
+                )
+            }
 
-        Image(
-            painter = painterResource(drawableId), contentDescription = "",
-            modifier = Modifier
-                .fillMaxHeight(0.3f)
-                .padding(10.dp)
-        )
+            Image(
+                painter = painterResource(drawableId), contentDescription = "",
+                modifier = Modifier
+                    .fillMaxHeight(0.3f)
+                    .padding(10.dp)
+            )
 
-        Button(onClick = { println("Let's scoot") }) {
-            Text(text = "Let's Scoot")
+            Button(onClick = { println("Let's scoot") }) {
+                Text(text = "Let's Scoot")
+            }
         }
     }
-}
 
-@Composable
-fun RenderMapUi() {
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+    @Composable
+    fun RenderMapUi() {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    //OnClick Method
+                },
+                shape = RoundedCornerShape(50),
+                backgroundColor = MaterialTheme.colors.primary,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .offset((-30).dp, 30.dp)
+                    .size(75.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.AccountCircle,
+                    contentDescription = "Profile",
+                    tint = MaterialTheme.colors.onPrimary,
+                    modifier = Modifier.size(60.dp)
+                )
+            }
+
+            var text by remember { mutableStateOf(TextFieldValue("")) }
+
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                Modifier
+                    .fillMaxWidth(0.8f)
+                    .offset(y = (-30).dp),
+                placeholder = { Text("Destination") },
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = MaterialTheme.colors.background
+                )
+            )
+        }
+    }
+
+
+    @Composable
+    fun MockMapFunctionality(
+        onMapClick: () -> Unit,
+        onButtonClick: () -> Unit
     ) {
-        FloatingActionButton(
-            onClick = {
-                //OnClick Method
-            },
-            shape = RoundedCornerShape(50),
-            backgroundColor = MaterialTheme.colors.primary,
-            modifier = Modifier
-                .align(Alignment.End)
-                .offset((-30).dp, 30.dp)
-                .size(75.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.AccountCircle,
-                contentDescription = "Profile",
-                tint = MaterialTheme.colors.onPrimary,
-                modifier = Modifier.size(60.dp)
+
+        Box(modifier = Modifier.fillMaxHeight()) {
+            val scooters = arrayOf(
+                Scooter(0, "ScooterBoi", BigDecimal(0.5), BigDecimal(0.3)),
+                Scooter(1, "ScootyMcScootface", BigDecimal(0.6), BigDecimal(0.4)),
+                Scooter(2, "iScoot", BigDecimal(0.7), BigDecimal(0.5)),
+                Scooter(3, "Scootie Doo", BigDecimal(0.9), BigDecimal(0.6)),
             )
+
+            Image(
+                painter = painterResource(R.drawable.static_map),
+                contentDescription = "",
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .clickable { onMapClick() },
+                contentScale = ContentScale.FillHeight,
+            )
+            LazyColumn(verticalArrangement = Arrangement.Center) {
+                items(scooters) { scooter ->
+                    DisplayScooterData(
+                        scooter = scooter, onButtonClick
+                    )
+                }
+            }
         }
-
-        var text by remember { mutableStateOf(TextFieldValue("")) }
-
-        TextField(
-            value = text,
-            onValueChange = { text = it },
-            Modifier
-                .fillMaxWidth(0.8f)
-                .offset(y = (-30).dp),
-            placeholder = { Text("Destination") },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background
-            )
-        )
     }
-}
 
-
-@Composable
-fun MockMapFunctionality(
-    onMapClick: () -> Unit,
-    onButtonClick: () -> Unit
-) {
-
-    Box(modifier = Modifier.fillMaxHeight()) {
-        val scooters = arrayOf(
-            Scooter(0, "ScooterBoi", BigDecimal(0.5), BigDecimal(0.3)),
-            Scooter(1, "ScootyMcScootface", BigDecimal(0.6), BigDecimal(0.4)),
-            Scooter(2, "iScoot", BigDecimal(0.7), BigDecimal(0.5)),
-            Scooter(3, "Scootie Doo", BigDecimal(0.9), BigDecimal(0.6)),
-        )
-
-        Image(
-            painter = painterResource(R.drawable.static_map),
-            contentDescription = "",
-            modifier = Modifier
-                .fillMaxHeight()
-                .clickable { onMapClick() },
-            contentScale = ContentScale.FillHeight,
-        )
-        LazyColumn(verticalArrangement = Arrangement.Center) {
-            items(scooters) { scooter ->
-                DisplayScooterData(
-                    scooter = scooter, onButtonClick
+    @Composable
+    fun DisplayScooterData(
+        scooter: Scooter,
+        onButtonClick: () -> Unit
+    ) {
+        Row() {
+            //Der text ist nicht sichtbar, aber so sieht das gemockt nicer aus
+            Text(text = scooter.description, Modifier.alpha(0f))
+            val model: SharedViewModel = viewModel()
+            Button(
+                onClick = {
+                    model.UpdateSelectedScooter(scooter)
+                    model.updateScooterInfo=true
+                    onButtonClick()
+                },
+                shape = RoundedCornerShape(50),
+                modifier = Modifier.size(50.dp, 50.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowUp, contentDescription = "",
                 )
             }
         }
     }
-}
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun DisplayScooterData(
-    scooter: Scooter,
-    onButtonClick: () -> Unit
-) {
-    Row() {
-        //Der text ist nicht sichtbar, aber so sieht das gemockt nicer aus
-        Text(text = scooter.description, Modifier.alpha(0f))
-        val model: SharedViewModel = viewModel()
-        Button(
-            onClick = {
-                model.UpdateSelectedScooter(scooter)
-                model.updateScooterInfo=true
-                onButtonClick()
-            },
-            shape = RoundedCornerShape(50),
-            modifier = Modifier.size(50.dp, 50.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.KeyboardArrowUp, contentDescription = "",
-            )
-        }
-    }
 }

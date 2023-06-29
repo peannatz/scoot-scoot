@@ -82,9 +82,9 @@ object LoginScreen {
             )
             Button(
                 onClick = { },
-                modifier = Modifier.padding(top = 10.dp)
+                modifier = Modifier.padding(top = 20.dp)
             ) {
-                Text(text = "Login")
+                Text(text = "Login", modifier = Modifier.padding(5.dp))
 
             }
         }
