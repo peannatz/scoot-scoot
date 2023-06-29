@@ -52,4 +52,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.0-beta01")
     implementation("androidx.media3:media3-exoplayer:1.1.0-rc01")
     implementation("androidx.media3:media3-ui:1.1.0-rc01")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:okhttp-tls:4.10.0")
 }
