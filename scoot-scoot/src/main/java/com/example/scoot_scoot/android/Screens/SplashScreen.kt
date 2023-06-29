@@ -28,6 +28,8 @@ import com.example.scoot_scoot.android.R
 import kotlinx.coroutines.delay
 
 object SplashScreen {
+
+    //TODO: Figure out how to remove androids splash screen
     @Composable
     fun SplashScreen(navController: NavController) = Box(
         Modifier
