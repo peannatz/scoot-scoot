@@ -1,4 +1,4 @@
-package com.example.scoot_scoot.android.Services
+package com.example.scoot_scoot.android.Service
 
 import java.time.Duration
 import java.time.LocalDateTime
