@@ -1,4 +1,4 @@
-package com.example.scoot_scoot.android
+package com.example.scoot_scoot.android.Screens
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.scoot_scoot.android.Screens.Screens
 
 object Dashboard {
     @Composable
@@ -37,11 +38,9 @@ object Dashboard {
                 textAlign = TextAlign.Center,
                 letterSpacing = 1.sp
             )
-            val contextForToast = LocalContext.current.applicationContext
             Button(
                 onClick = {
-                    Toast.makeText(contextForToast, "Ouch!", Toast.LENGTH_SHORT).show()
-                    navController.navigate(Screens.Map)
+                    navController.navigate(Screens.Register)
                 },
                 Modifier.padding(10.dp)
             )

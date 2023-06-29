@@ -10,9 +10,16 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.scoot_scoot.android.Dashboard.Dashboard
-import com.example.scoot_scoot.android.MapScreen.MapScreen
-import com.example.scoot_scoot.android.SplashScreen.SplashScreen
+import com.example.scoot_scoot.android.Screens.Dashboard.Dashboard
+import com.example.scoot_scoot.android.Screens.LoginScreen
+import com.example.scoot_scoot.android.Screens.LoginScreen.LoginScreen
+import com.example.scoot_scoot.android.Screens.MapScreen.MapScreen
+import com.example.scoot_scoot.android.Screens.ProfileScreen
+import com.example.scoot_scoot.android.Screens.ProfileScreen.ProfileScreen
+import com.example.scoot_scoot.android.Screens.RegisterScreen
+import com.example.scoot_scoot.android.Screens.RegisterScreen.RegisterScreen
+import com.example.scoot_scoot.android.Screens.Screens
+import com.example.scoot_scoot.android.Screens.SplashScreen.SplashScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -35,15 +42,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screens.Splash) {
+    NavHost(navController = navController, startDestination = Screens.Login) {
         composable(Screens.Splash) {
             SplashScreen(navController)
         }
         composable(Screens.Dashboard) { Dashboard(navController) }
         composable(Screens.Map) { MapScreen(navController) }
-        composable(Screens.Register) { MapScreen(navController) }
-        composable(Screens.Login) { MapScreen(navController) }
-        composable(Screens.Profile) { MapScreen(navController) }
+        composable(Screens.Register) { RegisterScreen(navController) }
+        composable(Screens.Login) { LoginScreen(navController) }
+        composable(Screens.Profile) { ProfileScreen(navController) }
     }
 
 }
