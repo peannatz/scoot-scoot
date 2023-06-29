@@ -29,13 +29,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.R
 
 
-object RegisterScreen {
-
-
+@UnstableApi object RegisterScreen {
     @Composable
     fun RegisterScreen(navController: NavController) {
         val name = remember { mutableStateOf(TextFieldValue()) }
@@ -45,6 +44,7 @@ object RegisterScreen {
         val password = remember { mutableStateOf(TextFieldValue()) }
         val passwordConfirmation = remember { mutableStateOf(TextFieldValue()) }
         val termsAndConditions = remember { mutableStateOf(false) }
+        val popup = remember { mutableStateOf(false) }
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -104,7 +104,7 @@ object RegisterScreen {
                 )
                 ClickableText(
                     text = AnnotatedString("terms and conditions"),
-                    onClick = {},
+                    onClick = { popup.value = !popup.value },
                     style = TextStyle(
                         color = MaterialTheme.colors.secondary,
                         fontSize = 15.sp,
@@ -115,6 +115,9 @@ object RegisterScreen {
             Button(onClick = { /*TODO*/ }) {
                 Text(text = "Register")
             }
+        }
+        if (popup.value) {
+            Popup.Show(popup)
         }
     }
 }

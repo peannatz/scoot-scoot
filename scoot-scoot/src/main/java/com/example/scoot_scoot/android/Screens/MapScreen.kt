@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -70,7 +71,7 @@ object MapScreen {
         model = viewModel()
 
         val toggleBottomSheet: () -> Unit = {
-            if (model.updateScooterInfo){
+            if (model.updateScooterInfo) {
                 bottomSheetContent = { UpdateScooterInfoInBottomSheet() }
             }
             if (model.sheetState.isVisible && !model.updateScooterInfo) {
@@ -78,7 +79,7 @@ object MapScreen {
             } else {
                 coroutineScope.launch { model.sheetState.show() }
             }
-            model.updateScooterInfo=false
+            model.updateScooterInfo = false
         }
 
         if (Build.DEVICE.contains("emu")) {
@@ -141,7 +142,8 @@ object MapScreen {
                     fontSize = 15.sp
                 )
                 Text(
-                    text = model.selectedScooter.priceKm.setScale(2, RoundingMode.HALF_EVEN).toString(),
+                    text = model.selectedScooter.priceKm.setScale(2, RoundingMode.HALF_EVEN)
+                        .toString(),
                     fontSize = 15.sp
                 )
             }
@@ -255,10 +257,11 @@ object MapScreen {
             Button(
                 onClick = {
                     model.UpdateSelectedScooter(scooter)
-                    model.updateScooterInfo=true
+                    model.updateScooterInfo = true
                     onButtonClick()
                 },
                 shape = RoundedCornerShape(50),
+                contentPadding = PaddingValues(0.dp),
                 modifier = Modifier.size(50.dp, 50.dp)
             ) {
                 Icon(
