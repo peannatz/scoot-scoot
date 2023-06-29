@@ -59,13 +59,13 @@ object SplashScreen {
             }
 
             LaunchedEffect(Unit) {
-                WaitForSplashscreenFade(navController, isVisible)
+                waitForSplashscreenFade(navController, isVisible)
             }
 
         }
     }
 
-    private suspend fun WaitForSplashscreenFade(navController: NavController, isVisible: MutableState<Boolean>) {
+    private suspend fun waitForSplashscreenFade(navController: NavController, isVisible: MutableState<Boolean>) {
         delay(500)
         isVisible.value = false;
         delay(500)

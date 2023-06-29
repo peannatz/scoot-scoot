@@ -54,12 +54,10 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-object MapView {
+object MapScreen {
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun MapView(navController: NavController) {
-        val contextForToast = LocalContext.current.applicationContext
-        val visibleBottom = remember { mutableStateOf(false) }
+    fun MapScreen(navController: NavController) {
         var bottomSheetContent: (@Composable () -> Unit)? by remember {
             mutableStateOf(null)
         }
@@ -89,7 +87,6 @@ object MapView {
             GoogleMap(modifier = Modifier.fillMaxHeight(),
                 onMapClick = { toggleBottomSheet() })
         }
-        //TODO: take this and move it to another composable on up also move the other stuff back to render ui
     }
 }
 
@@ -163,41 +160,6 @@ fun UpdateScooterInfoInBottomSheet(model: SharedViewModel) {
 
         Button(onClick = { println("Let's scoot") }) {
             Text(text = "Let's Scoot")
-        }
-    }
-}
-
-
-@Composable
-fun OpenBottomSheet(visible: MutableState<Boolean>) {
-    val model: SharedViewModel = viewModel();
-    Box() {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxHeight(0.3f)
-                .fillMaxWidth(0.8f)
-                .offset(y = (-30).dp)
-                .background(MaterialTheme.colors.background)
-                .padding(20.dp)
-        ) {
-            //TODO: On tap schließen, zoomen und swipen aber möglich?
-            Button(
-                onClick = { visible.value = false },
-                shape = RoundedCornerShape(50),
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .offset((-10).dp, 10.dp)
-                    .size(40.dp, 40.dp)
-            )
-            {
-                Image(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = "Close Scooter Info"
-                )
-
-            }
-            Text(model.selectedScooter.description)
         }
     }
 }

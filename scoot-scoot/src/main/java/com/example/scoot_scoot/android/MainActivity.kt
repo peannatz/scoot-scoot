@@ -1,26 +1,18 @@
 package com.example.scoot_scoot.android
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.scoot_scoot.android.Dashboard.Dashboard
-import com.example.scoot_scoot.android.MapView.MapView
+import com.example.scoot_scoot.android.MapScreen.MapScreen
 import com.example.scoot_scoot.android.SplashScreen.SplashScreen
-import com.google.maps.android.compose.GoogleMap
 
 class MainActivity : ComponentActivity() {
 
@@ -48,39 +40,10 @@ fun Navigation() {
             SplashScreen(navController)
         }
         composable(Screens.Dashboard) { Dashboard(navController) }
-        composable(Screens.Map) { MapView(navController) }
+        composable(Screens.Map) { MapScreen(navController) }
+        composable(Screens.Register) { MapScreen(navController) }
+        composable(Screens.Login) { MapScreen(navController) }
+        composable(Screens.Profile) { MapScreen(navController) }
     }
 
-}
-
-@Composable
-fun GreetingView(text: String) {
-    val contextForToast = LocalContext.current.applicationContext
-    Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        GoogleMap(modifier = Modifier.fillMaxHeight(0.6f))
-        Text(text = text)
-        Button(onClick = {
-            Toast.makeText(contextForToast, "Ouch!", Toast.LENGTH_SHORT).show()
-        })
-        { Text(text = "Press me") }
-    }
-}
-
-@Preview
-@Composable
-fun AddText() {
-    Column {
-        Text("ouch")
-    }
-}
-
-@Preview
-@Composable
-fun DefaultPreview() {
-    MyApplicationTheme {
-        GreetingView("Hello, Android!")
-    }
 }
