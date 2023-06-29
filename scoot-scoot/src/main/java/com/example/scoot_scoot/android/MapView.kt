@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -284,7 +285,7 @@ fun DisplayScooterData(
 ) {
     Row() {
         //Der text ist nicht sichtbar, aber so sieht das gemockt nicer aus
-        Text(text = scooter.description)
+        Text(text = scooter.description, Modifier.alpha(0f))
         val model: SharedViewModel = viewModel()
         Button(
             onClick = {
