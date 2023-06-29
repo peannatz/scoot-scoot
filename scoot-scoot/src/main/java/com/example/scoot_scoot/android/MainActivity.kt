@@ -1,26 +1,25 @@
 package com.example.scoot_scoot.android
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.scoot_scoot.android.Dashboard.Dashboard
-import com.example.scoot_scoot.android.MapView.MapView
-import com.example.scoot_scoot.android.SplashScreen.SplashScreen
-import com.google.maps.android.compose.GoogleMap
+import com.example.scoot_scoot.android.Screens.Dashboard.Dashboard
+import com.example.scoot_scoot.android.Screens.LoginScreen
+import com.example.scoot_scoot.android.Screens.LoginScreen.LoginScreen
+import com.example.scoot_scoot.android.Screens.MapScreen.MapScreen
+import com.example.scoot_scoot.android.Screens.ProfileScreen
+import com.example.scoot_scoot.android.Screens.ProfileScreen.ProfileScreen
+import com.example.scoot_scoot.android.Screens.RegisterScreen
+import com.example.scoot_scoot.android.Screens.RegisterScreen.RegisterScreen
+import com.example.scoot_scoot.android.Screens.Screens
+import com.example.scoot_scoot.android.Screens.SplashScreen.SplashScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -43,44 +42,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screens.Splash) {
+    NavHost(navController = navController, startDestination = Screens.Register) {
         composable(Screens.Splash) {
             SplashScreen(navController)
         }
         composable(Screens.Dashboard) { Dashboard(navController) }
-        composable(Screens.Map) { MapView(navController) }
+        composable(Screens.Map) { MapScreen(navController) }
+        composable(Screens.Register) { RegisterScreen(navController) }
+        composable(Screens.Login) { LoginScreen(navController) }
+        composable(Screens.Profile) { ProfileScreen(navController) }
     }
 
-}
-
-@Composable
-fun GreetingView(text: String) {
-    val contextForToast = LocalContext.current.applicationContext
-    Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        GoogleMap(modifier = Modifier.fillMaxHeight(0.6f))
-        Text(text = text)
-        Button(onClick = {
-            Toast.makeText(contextForToast, "Ouch!", Toast.LENGTH_SHORT).show()
-        })
-        { Text(text = "Press me") }
-    }
-}
-
-@Preview
-@Composable
-fun AddText() {
-    Column {
-        Text("ouch")
-    }
-}
-
-@Preview
-@Composable
-fun DefaultPreview() {
-    MyApplicationTheme {
-        GreetingView("Hello, Android!")
-    }
 }

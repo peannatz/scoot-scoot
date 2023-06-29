@@ -1,4 +1,4 @@
-package com.example.scoot_scoot.android
+package com.example.scoot_scoot.android.Screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.scoot_scoot.android.R
 import kotlinx.coroutines.delay
 
 object SplashScreen {
@@ -59,13 +60,13 @@ object SplashScreen {
             }
 
             LaunchedEffect(Unit) {
-                WaitForSplashscreenFade(navController, isVisible)
+                waitForSplashscreenFade(navController, isVisible)
             }
 
         }
     }
 
-    private suspend fun WaitForSplashscreenFade(navController: NavController, isVisible: MutableState<Boolean>) {
+    private suspend fun waitForSplashscreenFade(navController: NavController, isVisible: MutableState<Boolean>) {
         delay(500)
         isVisible.value = false;
         delay(500)
