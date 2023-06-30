@@ -2,6 +2,7 @@ package com.example.scoot_scoot.android.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,20 +31,19 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.media3.common.util.UnstableApi
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.scoot_scoot.android.NetworkClient
 import com.example.scoot_scoot.android.R
-
+import com.example.scoot_scoot.android.ViewModels.RegisterViewModel
 
 object RegisterScreen {
     @Composable
-    fun RegisterScreen(navController: NavController) {
-        val name = remember { mutableStateOf(TextFieldValue()) }
-        val surname = remember { mutableStateOf(TextFieldValue()) }
-        val email = remember { mutableStateOf(TextFieldValue()) }
-        val birthdate = remember { mutableStateOf(TextFieldValue()) }
-        val password = remember { mutableStateOf(TextFieldValue()) }
-        val passwordConfirmation = remember { mutableStateOf(TextFieldValue()) }
+    fun RegisterScreen(navController: NavController, rvm: RegisterViewModel = viewModel()) {
+
+        var fields = mapOf<String, MutableState<TextFieldValue>>()
+
+
         val termsAndConditions = remember { mutableStateOf(false) }
         val popup = remember { mutableStateOf(false) }
 
@@ -60,35 +61,12 @@ object RegisterScreen {
                 style = TextStyle(fontSize = 20.sp),
                 modifier = Modifier.padding(bottom = 40.dp)
             )
-            TextField(
-                value = name.value,
-                onValueChange = { name.value = it },
-                label = { Text(text = "Name") })
-            TextField(
-                value = surname.value,
-                onValueChange = { surname.value = it },
-                label = { Text(text = "Surname") })
-            TextField(
-                value = email.value,
-                onValueChange = { email.value = it },
-                label = { Text(text = "Email") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-            )
-            TextField(
-                value = birthdate.value,
-                onValueChange = { birthdate.value = it },
-                label = { Text(text = "Birthday") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                visualTransformation = DateTransformation()
-            )
-            TextField(
-                value = password.value,
-                onValueChange = { password.value = it },
-                label = { Text(text = "Password") })
-            TextField(
-                value = passwordConfirmation.value,
-                onValueChange = { passwordConfirmation.value = it },
-                label = { Text(text = "Confirm Password") })
+            NameField(rvm)
+            SurnameField(rvm)
+            EmailField(rvm)
+            BirthdayField(rvm)
+            PasswordField(rvm)
+            PasswordConfirmationField(rvm)
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -112,48 +90,205 @@ object RegisterScreen {
                     )
                 )
             }
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = {
+                Thread {
+                    rvm.register()
+                    val test = NetworkClient.makeRequest()
+                    println(test)
+                }.start()
+            }, enabled = rvm.isEnabledRegisterButton.value) {
                 Text(text = "Register")
             }
         }
         if (popup.value) {
             Popup.Show(popup)
         }
+
     }
-}
+
+    @Composable
+    fun NameField(rvm: RegisterViewModel) {
+        Box {
+            TextField(
+                value = rvm.name.value,
+                onValueChange = {
+                    rvm.name.value = it
+                    rvm.validateName()
+                },
+                label = { Text(text = "Name") },
+                singleLine = true
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.BottomCenter),
+                text = rvm.nameErrMsg.value,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.secondary,
+            )
+        }
+    }
+
+    @Composable
+    fun SurnameField(rvm: RegisterViewModel) {
+        Box {
+            TextField(
+                value = rvm.surname.value,
+                onValueChange = {
+                    rvm.surname.value = it
+                    rvm.validateSurname()
+                },
+                label = { Text(text = "Surname") },
+                singleLine = true,
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.BottomCenter),
+                text = rvm.surnameErrMsg.value,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.error
+            )
+        }
+    }
+
+    @Composable
+    fun EmailField(rvm: RegisterViewModel) {
+        Box {
+            TextField(
+                value = rvm.email.value,
+                onValueChange = {
+                    rvm.email.value = it
+                    rvm.validateEmail()
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                singleLine = true,
+                label = { Text(text = "Email") },
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.BottomCenter),
+                text = rvm.emailErrMsg.value,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.error
+            )
+        }
+
+    }
+
+    @Composable
+    fun PasswordField(rvm: RegisterViewModel) {
+        Box {
+            TextField(
+                value = rvm.password.value,
+                onValueChange = {
+                    rvm.password.value = it
+                    rvm.validatePassword()
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                singleLine = true,
+                label = { Text(text = "Password") },
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.BottomCenter),
+                text = rvm.passwordErrMsg.value,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.error
+            )
+        }
+
+    }
+
+    @Composable
+    fun PasswordConfirmationField(rvm: RegisterViewModel) {
+        Box {
+            TextField(
+                value = rvm.confirmPassword.value,
+                onValueChange = {
+                    rvm.confirmPassword.value = it
+                    rvm.validateConfirmPassword()
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                singleLine = true,
+                label = { Text(text = "Confirm Password") },
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.BottomCenter),
+                text = rvm.confPasswordErrMsg.value,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.error
+            )
+        }
+
+    }
+
+    @Composable
+    fun BirthdayField(rvm: RegisterViewModel) {
+        Box {
+            TextField(
+                value = rvm.birthday.value,
+                onValueChange = {
+                    rvm.birthday.value = it
+                    if(rvm.birthday.value.length==8){
+                        rvm.validateBirthday()
+                    }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                visualTransformation = DateTransformation(),
+                singleLine = true,
+                label = { Text(text = "DD.MM.YYYY") },
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.BottomCenter),
+                text = rvm.birthdayErrMsg.value,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.error
+            )
+        }
+    }
+
 
 //TODO: move this, keep placeholder and only replace one char at a time
 
-class DateTransformation() : VisualTransformation {
-    override fun filter(text: AnnotatedString): TransformedText {
-        return dateFilter(text)
-    }
-}
-
-fun dateFilter(text: AnnotatedString): TransformedText {
-
-    val trimmed = if (text.text.length >= 8) text.text.substring(0..7) else text.text
-    var out = ""
-    for (i in trimmed.indices) {
-        out += trimmed[i]
-        if (i % 2 == 1 && i < 4) out += "."
-    }
-
-    val numberOffsetTranslator = object : OffsetMapping {
-        override fun originalToTransformed(offset: Int): Int {
-            if (offset <= 1) return offset
-            if (offset <= 3) return offset + 1
-            if (offset <= 8) return offset + 2
-            return 10
-        }
-
-        override fun transformedToOriginal(offset: Int): Int {
-            if (offset <= 2) return offset
-            if (offset <= 5) return offset - 1
-            if (offset <= 10) return offset - 2
-            return 8
+    class DateTransformation() : VisualTransformation {
+        override fun filter(text: AnnotatedString): TransformedText {
+            return dateFilter(text)
         }
     }
 
-    return TransformedText(AnnotatedString(out), numberOffsetTranslator)
+    fun dateFilter(text: AnnotatedString): TransformedText {
+
+        val trimmed = if (text.text.length >= 8) text.text.substring(0..7) else text.text
+        var out = ""
+        for (i in trimmed.indices) {
+            out += trimmed[i]
+            if (i % 2 == 1 && i < 4) out += "."
+        }
+
+        val numberOffsetTranslator = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                if (offset <= 1) return offset
+                if (offset <= 3) return offset + 1
+                if (offset <= 8) return offset + 2
+                return 10
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                if (offset <= 2) return offset
+                if (offset <= 5) return offset - 1
+                if (offset <= 10) return offset - 2
+                return 8
+            }
+        }
+
+        return TransformedText(AnnotatedString(out), numberOffsetTranslator)
+    }
+
 }

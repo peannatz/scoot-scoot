@@ -27,7 +27,8 @@ fun MyApplicationTheme(
             primaryVariant = Color(0xff0c4d49),
             secondary = Color(0xFFa40043),
             onPrimary = Color(0xFF81CBCE),
-            onSecondary = Color(0xFFFDE0F6)
+            onSecondary = Color(0xFFFDE0F6),
+            error = Color(0xFFD83678)
         )
     } else {
         lightColors(
@@ -36,7 +37,8 @@ fun MyApplicationTheme(
             primaryVariant = Color(0xff0b6966),
             secondary = Color(0xFFF278DC),
             onPrimary = Color(0xff0c4d49),
-            onSecondary = Color(0xFFE1F2F3)
+            onSecondary = Color(0xFFE1F2F3),
+            error = Color(0xFFa40043)
         )
     }
     val typography = Typography(
