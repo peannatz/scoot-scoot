@@ -1,31 +1,60 @@
 package com.example.scoot_scoot.android
 
+import com.example.scoot_scoot.android.Data.RegisterUser
+import com.google.gson.Gson
 import okhttp3.OkHttpClient
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
-import java.security.SecureRandom
-import java.security.cert.X509Certificate
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
 
 object NetworkClient {
 
-    private val client: OkHttpClient
+    private val client: OkHttpClient = OkHttpClient.Builder()
+        .hostnameVerifier { _, _ -> true }
+        .build()
 
-    init {
+    private val baseUrl = "http://10.0.2.2:8080"
 
-        client = OkHttpClient.Builder()
-            .hostnameVerifier { _, _ -> true }
-            .build()
+    fun getScooterById(id: Int): String? {
+        val url = "${baseUrl}/getScooter/$id"
+        return getRequest(url)
     }
 
+    fun addUser(userData: RegisterUser) {
+        val url = "${baseUrl}/addUser"
 
+        val gson = Gson()
+        val jsonPayload = gson.toJson(userData)
 
-    fun makeRequest(): String? {
-        val url = "http://10.0.2.2:8080/getScooter/1"
+        print(
+            jsonPayload
+        )
+        postRequest(url, jsonPayload)
+    }
+
+    private fun postRequest(url: String, body: String) {
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val requestBody = RequestBody.create(mediaType, body)
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        try {
+            val response: Response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                println("Unsuccessful response: ${response.code} ${response.message}")
+            }else{
+                println(response.body)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun getRequest(url: String): String? {
         val request = Request.Builder()
             .url(url)
             .build()
@@ -35,7 +64,7 @@ object NetworkClient {
             return if (response.isSuccessful) {
                 response.body?.string()
             } else {
-                // Handle the error response
+                println("Unsuccessful response: ${response.code} ${response.message}")
                 null
             }
         } catch (e: IOException) {
