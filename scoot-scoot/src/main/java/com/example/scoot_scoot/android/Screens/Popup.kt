@@ -1,6 +1,5 @@
 package com.example.scoot_scoot.android.Screens
 
-import android.view.RoundedCorner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.MaterialTheme
@@ -115,7 +114,7 @@ object Popup {
 
 
     private suspend fun waitUntilShowingCloseButton(isVisible: MutableState<Boolean>) {
-        delay(10)
+        delay(5000)
         isVisible.value = true;
     }
 }
