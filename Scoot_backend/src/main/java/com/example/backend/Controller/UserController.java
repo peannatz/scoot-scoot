@@ -39,7 +39,7 @@ public class UserController {
         return userRepository.findByEmail(email);
     }
 
-    @PostMapping("/update/{Id}")
+    @PostMapping("/update/{id}")
     public void updateUser(@PathVariable int id, @RequestBody User user){
         userService.updateUser(id, user);
     }

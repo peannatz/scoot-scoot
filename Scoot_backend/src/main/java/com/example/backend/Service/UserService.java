@@ -18,7 +18,8 @@ public class UserService {
 
     public void updateUser(int id, User user){
         User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Cant find User with the given Id"));
-        modelMapper.map(user, existingUser);
+        modelMapper.map(user, existingUser, "id");
+        existingUser.setId(id);
         userRepository.save(existingUser);
     }
 }
