@@ -13,4 +13,6 @@ public interface ScooterRepository extends CrudRepository<Scooter, Long> {
     Optional<Scooter> findById(int id);
 
     List<Scooter> findAll();
+
+    List<Scooter> findByAvailable(boolean available);
 }

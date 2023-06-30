@@ -38,4 +38,9 @@ public class ScootController {
     public List<Scooter> getAllScooters(){
         return scooterRepository.findAll();
     }
+
+    @PostMapping("/getAllAvailableScooters/{available}")
+    public List<Scooter> getAllAvailableScooters(@PathVariable boolean available){
+        return scooterRepository.findByAvailable(available);
+    }
 }
