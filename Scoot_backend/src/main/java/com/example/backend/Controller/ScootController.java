@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController()
@@ -31,5 +32,10 @@ public class ScootController {
     @GetMapping("/getScooter/{id}")
     public Optional<Scooter> getScooter(@PathVariable int id){
         return scooterRepository.findById(id);
+    }
+
+    @GetMapping("/getAllScooters")
+    public List<Scooter> getAllScooters(){
+        return scooterRepository.findAll();
     }
 }
