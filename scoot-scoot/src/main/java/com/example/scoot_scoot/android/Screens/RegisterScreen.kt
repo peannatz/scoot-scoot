@@ -15,7 +15,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,9 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -36,17 +35,11 @@ import androidx.navigation.NavController
 import com.example.scoot_scoot.android.NetworkClient
 import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.ViewModels.RegisterViewModel
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import kotlin.math.min
 
 object RegisterScreen {
     @Composable
     fun RegisterScreen(navController: NavController, rvm: RegisterViewModel = viewModel()) {
-
-        var fields = mapOf<String, MutableState<TextFieldValue>>()
-
 
         val termsAndConditions = remember { mutableStateOf(false) }
         val popup = remember { mutableStateOf(false) }
@@ -68,8 +61,7 @@ object RegisterScreen {
             NameField(rvm)
             SurnameField(rvm)
             EmailField(rvm)
-            BirthdateField1(rvm)
-            //BirthdateField(rvm)
+            BirthdateField(rvm)
             PasswordField(rvm)
             PasswordConfirmationField(rvm)
             Row(
@@ -159,6 +151,33 @@ object RegisterScreen {
     }
 
     @Composable
+    fun BirthdateField(rvm: RegisterViewModel) {
+        Box {
+            TextField(
+                value = rvm.birthday.value,
+                onValueChange = { newValue ->
+                    rvm.birthday.value = validateOnInput(newValue)
+                    if (rvm.birthday.value.length == 8) {
+                        rvm.validateBirthday()
+                    }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                visualTransformation = DateTransformation(),
+                singleLine = true,
+                label = { Text(text = "Birthdate") },
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.BottomCenter),
+                text = rvm.birthdayErrMsg.value,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.error
+            )
+        }
+    }
+
+    @Composable
     fun EmailField(rvm: RegisterViewModel) {
         Box {
             TextField(
@@ -233,110 +252,116 @@ object RegisterScreen {
 
     }
 
-    @Composable
-    fun BirthdateField(rvm: RegisterViewModel) {
-        val format = SimpleDateFormat("ddMMyyyy", Locale.ENGLISH)
-        Box {
-            TextField(
-                value = format.format(rvm.birthdate.value).toString(),
-                onValueChange = {
-                    rvm.birthdate.value = format.parse(it) as Date
-                    if(rvm.birthdate.value.toString().length==8){
-                        rvm.validateBirthday()
+    private fun validateOnInput(input: String): String {
+        val validatedInput = StringBuilder(
+            when (input.length) {
+                1 -> {
+                    val dayPart = input.take(1).toIntOrNull()?.coerceIn(0, 3) ?: 1
+                    dayPart.toString()
+                }
+
+                2 -> {
+                    val dayPart = input.take(2).toIntOrNull()?.coerceIn(1, 31) ?: 31
+                    if (dayPart < 10) {
+                        dayPart.toString().padStart(1, '0')
+                    } else {
+                        dayPart.toString()
                     }
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                visualTransformation = DateTransformation(),
-                singleLine = true,
-                label = { Text(text = "DD.MM.YYYY") },
-            )
-            Text(
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .align(Alignment.BottomCenter),
-                text = rvm.birthdateErrMsg.value,
-                fontSize = 14.sp,
-                color = MaterialTheme.colors.error
-            )
-        }
+                }
+
+                3 -> {
+                    val dayPart = input.take(2)
+                    val monthPart = input.substring(2, 3).toIntOrNull()?.coerceIn(1, 1) ?: 1
+                    dayPart + monthPart.toString()
+                }
+
+                4 -> {
+                    val dayPart = input.take(2)
+                    val monthPart = input.substring(2, 4).toIntOrNull()?.coerceIn(1, 12) ?: 12
+                    dayPart + monthPart.toString()
+                }
+
+                8 -> {
+                    val dayAndMonthPart = input.take(4)
+                    val yearPart = input.substring(4).toIntOrNull() ?: 2021
+                    dayAndMonthPart + yearPart.toString()
+                }
+
+                else -> input
+            }
+        )
+
+        return validatedInput.toString()
     }
 
-    @Composable
-    fun BirthdateField1(rvm: RegisterViewModel) {
-        Box {
-            val inputText = rvm.birthdate.value?.toInputString() ?: "DDMMYYYY"
-            TextField(
-                value = inputText,
-                onValueChange = { newValue ->
-                    val filteredValue = newValue.filter { it.isDigit() }
-                    rvm.birthdate.value = filteredValue.toDateOrNull()!!
-                    if (filteredValue.length == 8) {
-                        //rvm.validateBirthday()
-                    }
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true,
-                label = { Text(text = "DD.MM.YYYY") },
-            )
-            Text(
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .align(Alignment.BottomCenter),
-                text = rvm.birthdateErrMsg.value,
-                fontSize = 14.sp,
-                color = MaterialTheme.colors.error
-            )
-        }
-    }
-
-    fun String.toDateOrNull(): Date? {
-        return try {
-            SimpleDateFormat("ddMMyyyy", Locale.ENGLISH).parse(this)
-        } catch (e: ParseException) {
-            null
-        }
-    }
-
-    fun Date.toInputString(): String {
-        val format = SimpleDateFormat("ddMMyyyy", Locale.ENGLISH)
-        return format.format(this)
-    }
-
-
-//TODO: move this, keep placeholder and only replace one char at a time
-
-    class DateTransformation() : VisualTransformation {
+    class DateTransformation : VisualTransformation {
         override fun filter(text: AnnotatedString): TransformedText {
-            return dateFilter(text)
-        }
-    }
+            val trimmed = text.text.take(8)
+            val transformedText = buildAnnotatedString {
+                when (trimmed.length) {
+                    0 -> append("DD.MM.YYYY")
+                    1 -> append("${text}D.MM.YYYY")
+                    2 -> append("${text}.MM.YYYY")
+                    3 -> append("${text.substring(0, 2)}.${text.substring(2, 3)}M.YYYY")
+                    4 -> append("${text.substring(0, 2)}.${text.substring(2, 4)}.YYYY")
+                    5 -> append(
+                        "${text.substring(0, 2)}.${text.substring(2, 4)}.${
+                            text.substring(
+                                4,
+                                5
+                            )
+                        }YYY"
+                    )
 
-    fun dateFilter(text: AnnotatedString): TransformedText {
+                    6 -> append(
+                        "${text.substring(0, 2)}.${text.substring(2, 4)}.${
+                            text.substring(
+                                4,
+                                6
+                            )
+                        }YY"
+                    )
 
-        val trimmed = if (text.text.length >= 8) text.text.substring(0..7) else text.text
-        var out = ""
-        for (i in trimmed.indices) {
-            out += trimmed[i]
-            if (i % 2 == 1 && i < 4) out += "."
-        }
+                    7 -> append(
+                        "${text.substring(0, 2)}.${text.substring(2, 4)}.${
+                            text.substring(
+                                4,
+                                7
+                            )
+                        }Y"
+                    )
 
-        val numberOffsetTranslator = object : OffsetMapping {
-            override fun originalToTransformed(offset: Int): Int {
-                if (offset <= 1) return offset
-                if (offset <= 3) return offset + 1
-                if (offset <= 8) return offset + 2
-                return 10
+                    8 -> append(
+                        "${text.substring(0, 2)}.${text.substring(2, 4)}.${
+                            text.substring(
+                                4,
+                                8
+                            )
+                        }"
+                    )
+
+                    else -> append("")
+                }
             }
 
-            override fun transformedToOriginal(offset: Int): Int {
-                if (offset <= 2) return offset
-                if (offset <= 5) return offset - 1
-                if (offset <= 10) return offset - 2
-                return 8
-            }
-        }
+            val offsetTranslator = object : OffsetMapping {
+                override fun originalToTransformed(offset: Int): Int {
+                    if (offset >= transformedText.length) {
+                        return transformedText.length
+                    }
+                    return offset
+                }
 
-        return TransformedText(AnnotatedString(out), numberOffsetTranslator)
+                override fun transformedToOriginal(offset: Int): Int {
+                    val originalOffset = min(offset, text.length)
+                    val transformedOffset =
+                        transformedText.text.substring(0, originalOffset).count { it != '.' }
+                    return min(transformedOffset, text.length)
+                }
+            }
+
+            return TransformedText(transformedText, offsetTranslator)
+        }
     }
 
 }
