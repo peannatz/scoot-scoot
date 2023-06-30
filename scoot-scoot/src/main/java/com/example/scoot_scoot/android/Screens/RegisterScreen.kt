@@ -154,11 +154,11 @@ object RegisterScreen {
     fun BirthdateField(rvm: RegisterViewModel) {
         Box {
             TextField(
-                value = rvm.birthday.value,
+                value = rvm.birthdate.value,
                 onValueChange = { newValue ->
-                    rvm.birthday.value = validateOnInput(newValue)
-                    if (rvm.birthday.value.length == 8) {
-                        rvm.validateBirthday()
+                    rvm.birthdate.value = validateOnInput(newValue)
+                    if (rvm.birthdate.value.length == 8) {
+                        rvm.validateBirthdate()
                     }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -170,7 +170,7 @@ object RegisterScreen {
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .align(Alignment.BottomCenter),
-                text = rvm.birthdayErrMsg.value,
+                text = rvm.birthdateErrMsg.value,
                 fontSize = 14.sp,
                 color = MaterialTheme.colors.error
             )

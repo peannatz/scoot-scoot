@@ -5,11 +5,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.scoot_scoot.android.Data.RegisterUser
-import java.time.Duration
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
 class RegisterViewModel : ViewModel() {
 
@@ -23,9 +21,9 @@ class RegisterViewModel : ViewModel() {
     var isSurnameInvalid: MutableState<Boolean> = mutableStateOf(false)
     var surnameErrMsg: MutableState<String> = mutableStateOf("")
 
-    var birthday: MutableState<String> = mutableStateOf(regUser.birthday)
-    var isBirthdayInvalid: MutableState<Boolean> = mutableStateOf(false)
-    var birthdayErrMsg: MutableState<String> = mutableStateOf("")
+    var birthdate: MutableState<String> = mutableStateOf(regUser.birthdate)
+    var isBirthdateInvalid: MutableState<Boolean> = mutableStateOf(false)
+    var birthdateErrMsg: MutableState<String> = mutableStateOf("")
 
     var email: MutableState<String> = mutableStateOf(regUser.email)
     var isEmailInvalid: MutableState<Boolean> = mutableStateOf(false)
@@ -78,17 +76,17 @@ class RegisterViewModel : ViewModel() {
         shouldEnabledRegisterButton()
     }
 
-    fun validateBirthday() {
+    fun validateBirthdate() {
         //TODO:check formatting
         val today = LocalDate.now()
         val formatter = DateTimeFormatter.ofPattern("ddMMyyyy")
-        val birthday = LocalDate.parse(birthday.value, formatter)
+        val birthday = LocalDate.parse(birthdate.value, formatter)
         if (Period.between(birthday, today).years < 18) {
-            isBirthdayInvalid.value = true
-            birthdayErrMsg.value = "You must be over 18"
+            isBirthdateInvalid.value = true
+            birthdateErrMsg.value = "You must be over 18"
         } else {
-            isBirthdayInvalid.value = false
-            birthdayErrMsg.value = ""
+            isBirthdateInvalid.value = false
+            birthdateErrMsg.value = ""
         }
         shouldEnabledRegisterButton()
     }
@@ -129,17 +127,17 @@ class RegisterViewModel : ViewModel() {
     fun register() {
         regUser.name = name.value
         regUser.surname = surname.value
-        regUser.birthday = birthday.value
+        regUser.birthdate = birthdate.value
         regUser.email = email.value
         //regUser.password = password.value
         //regUser.confirmPassword = confirmPassword.value
-        Log.d("Karthik name", name.value)
-        Log.d("Karthik surname", surname.value)
-        Log.d("Karthik Birthday", birthday.value.toString())
-        Log.d("Karthik email", email.value)
-        Log.d("Karthik password", password.value)
-        Log.d("Karthik confirmPassword", confirmPassword.value)
-        Log.d("Karthik", regUser.toString())
+        Log.d("name", name.value)
+        Log.d("surname", surname.value)
+        Log.d("Birthdate", birthdate.value)
+        Log.d("email", email.value)
+        Log.d("password", password.value)
+        Log.d("confirmPassword", confirmPassword.value)
+        Log.d("user", regUser.toString())
     }
 
 }
