@@ -49,7 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.Scooter
-import com.example.scoot_scoot.android.SharedViewModel
+import com.example.scoot_scoot.android.ViewModels.SharedViewModel
 import com.google.maps.android.compose.GoogleMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -60,6 +60,8 @@ object MapScreen {
 
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var model: SharedViewModel
+    private var updateScooterInfo = false
+
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
@@ -71,15 +73,15 @@ object MapScreen {
         model = viewModel()
 
         val toggleBottomSheet: () -> Unit = {
-            if (model.updateScooterInfo) {
+            if (updateScooterInfo) {
                 bottomSheetContent = { UpdateScooterInfoInBottomSheet() }
             }
-            if (model.sheetState.isVisible && !model.updateScooterInfo) {
+            if (model.sheetState.isVisible && !updateScooterInfo) {
                 coroutineScope.launch { model.sheetState.hide() }
             } else {
                 coroutineScope.launch { model.sheetState.show() }
             }
-            model.updateScooterInfo = false
+            updateScooterInfo = false
         }
 
         if (Build.DEVICE.contains("emu")) {
@@ -99,7 +101,7 @@ object MapScreen {
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun PrepareBottomSheet(
-        bottomSheetContent: @Composable() (() -> Unit)?
+        bottomSheetContent: @Composable (() -> Unit)?
     ) {
         val modalSheetState = model.sheetState
         ModalBottomSheetLayout(
@@ -213,6 +215,7 @@ object MapScreen {
     }
 
 
+    @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun MockMapFunctionality(
         onMapClick: () -> Unit,
@@ -232,7 +235,7 @@ object MapScreen {
                 contentDescription = "",
                 modifier = Modifier
                     .fillMaxHeight()
-                    .clickable { onMapClick() },
+                    .clickable { coroutineScope.launch { model.sheetState.hide() } },
                 contentScale = ContentScale.FillHeight,
             )
             LazyColumn(verticalArrangement = Arrangement.Center) {
@@ -256,8 +259,8 @@ object MapScreen {
             val model: SharedViewModel = viewModel()
             Button(
                 onClick = {
+                    updateScooterInfo = true
                     model.UpdateSelectedScooter(scooter)
-                    model.updateScooterInfo = true
                     onButtonClick()
                 },
                 shape = RoundedCornerShape(50),
