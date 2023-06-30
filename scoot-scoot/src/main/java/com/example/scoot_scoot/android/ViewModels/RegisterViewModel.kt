@@ -31,11 +31,13 @@ class RegisterViewModel : ViewModel() {
     var isEmailInvalid: MutableState<Boolean> = mutableStateOf(false)
     var emailErrMsg: MutableState<String> = mutableStateOf("")
 
-    var password: MutableState<String> = mutableStateOf(regUser.password)
+    //var password: MutableState<String> = mutableStateOf(regUser.password)
+    var password: MutableState<String> = mutableStateOf("")
     var isPasswordInvalid: MutableState<Boolean> = mutableStateOf(false)
     var passwordErrMsg: MutableState<String> = mutableStateOf("")
 
-    var confirmPassword: MutableState<String> = mutableStateOf(regUser.confirmPassword)
+    //var confirmPassword: MutableState<String> = mutableStateOf(regUser.confirmPassword)
+    var confirmPassword: MutableState<String> = mutableStateOf("")
     var isConfirmPasswordInvalid: MutableState<Boolean> = mutableStateOf(false)
     var confPasswordErrMsg: MutableState<String> = mutableStateOf("")
 
@@ -77,9 +79,10 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun validateBirthday() {
+        //TODO:check formatting
         val today = LocalDate.now()
-        val formatter= DateTimeFormatter.ofPattern("ddMMyyyy")
-        val birthday=LocalDate.parse(birthday.value,formatter)
+        val formatter = DateTimeFormatter.ofPattern("ddMMyyyy")
+        val birthday = LocalDate.parse(birthday.value, formatter)
         if (Period.between(birthday, today).years < 18) {
             isBirthdayInvalid.value = true
             birthdayErrMsg.value = "You must be over 18"
@@ -128,8 +131,8 @@ class RegisterViewModel : ViewModel() {
         regUser.surname = surname.value
         regUser.birthday = birthday.value
         regUser.email = email.value
-        regUser.password = password.value
-        regUser.confirmPassword = confirmPassword.value
+        //regUser.password = password.value
+        //regUser.confirmPassword = confirmPassword.value
         Log.d("Karthik name", name.value)
         Log.d("Karthik surname", surname.value)
         Log.d("Karthik Birthday", birthday.value.toString())
