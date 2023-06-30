@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,5 +43,18 @@ public class ScootController {
     @PostMapping("/getAllAvailableScooters/{available}")
     public List<Scooter> getAllAvailableScooters(@PathVariable boolean available){
         return scooterRepository.findByAvailable(available);
+    }
+
+    @GetMapping("/getByBattery/{battery}")
+    public List<Scooter> getScootersByBattery(@PathVariable int battery){
+        List<Scooter> scooterList = scooterRepository.findAll();
+        List<Scooter> scooterBatteryList = new ArrayList<>();
+        for (Scooter scooter:scooterList
+             ) {
+            if(scooter.getBattery() > battery){
+                scooterBatteryList.add(scooter);
+            }
+        }
+        return scooterBatteryList;
     }
 }
