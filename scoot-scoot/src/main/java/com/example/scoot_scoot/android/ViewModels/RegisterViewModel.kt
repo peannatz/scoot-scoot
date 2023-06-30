@@ -39,6 +39,7 @@ class RegisterViewModel : ViewModel() {
     var isConfirmPasswordInvalid: MutableState<Boolean> = mutableStateOf(false)
     var confPasswordErrMsg: MutableState<String> = mutableStateOf("")
 
+    var termsAndConditionsAccepted: MutableState<Boolean> = mutableStateOf(false)
     var isEnabledRegisterButton: MutableState<Boolean> = mutableStateOf(false)
 
     private fun shouldEnabledRegisterButton() {
@@ -52,6 +53,7 @@ class RegisterViewModel : ViewModel() {
                 && email.value.isNotEmpty()
                 && password.value.isNotEmpty()
                 && confirmPassword.value.isNotEmpty()
+                && termsAndConditionsAccepted.value
     }
 
     fun validateName() {
@@ -121,6 +123,10 @@ class RegisterViewModel : ViewModel() {
             isConfirmPasswordInvalid.value = false
             confPasswordErrMsg.value = ""
         }
+        shouldEnabledRegisterButton()
+    }
+
+    fun termsAndConditionsChecked() {
         shouldEnabledRegisterButton()
     }
 

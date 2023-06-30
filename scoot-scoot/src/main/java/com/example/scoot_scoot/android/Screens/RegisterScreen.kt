@@ -41,7 +41,6 @@ object RegisterScreen {
     @Composable
     fun RegisterScreen(navController: NavController, rvm: RegisterViewModel = viewModel()) {
 
-        val termsAndConditions = remember { mutableStateOf(false) }
         val popup = remember { mutableStateOf(false) }
 
         Column(
@@ -69,8 +68,11 @@ object RegisterScreen {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
-                    checked = termsAndConditions.value,
-                    onCheckedChange = { termsAndConditions.value = it })
+                    checked = rvm.termsAndConditionsAccepted.value,
+                    onCheckedChange = {
+                        rvm.termsAndConditionsAccepted.value = it
+                        rvm.termsAndConditionsChecked()
+                    })
                 Text(
                     text = "I agree to the ",
                     style = TextStyle(
@@ -156,7 +158,9 @@ object RegisterScreen {
             TextField(
                 value = rvm.birthdate.value,
                 onValueChange = { newValue ->
-                    rvm.birthdate.value = validateOnInput(newValue)
+                    if (newValue.length <= 8) {
+                        rvm.birthdate.value = validateOnInput(newValue)
+                    }
                     if (rvm.birthdate.value.length == 8) {
                         rvm.validateBirthdate()
                     }
@@ -256,14 +260,14 @@ object RegisterScreen {
         val validatedInput = StringBuilder(
             when (input.length) {
                 1 -> {
-                    val dayPart = input.take(1).toIntOrNull()?.coerceIn(0, 3) ?: 1
+                    val dayPart = input.take(1).toIntOrNull()?.coerceIn(0, 3) ?: 0
                     dayPart.toString()
                 }
 
                 2 -> {
                     val dayPart = input.take(2).toIntOrNull()?.coerceIn(1, 31) ?: 31
                     if (dayPart < 10) {
-                        dayPart.toString().padStart(1, '0')
+                        dayPart.toString().padStart(2, '0')
                     } else {
                         dayPart.toString()
                     }
@@ -271,14 +275,31 @@ object RegisterScreen {
 
                 3 -> {
                     val dayPart = input.take(2)
-                    val monthPart = input.substring(2, 3).toIntOrNull()?.coerceIn(1, 1) ?: 1
+                    val monthPart = input.substring(2, 3).toIntOrNull()?.coerceIn(0, 1) ?: 0
                     dayPart + monthPart.toString()
                 }
 
                 4 -> {
                     val dayPart = input.take(2)
                     val monthPart = input.substring(2, 4).toIntOrNull()?.coerceIn(1, 12) ?: 12
-                    dayPart + monthPart.toString()
+                    if (monthPart < 10) {
+                        dayPart + (monthPart.toString().padStart(2, '0'))
+                    } else {
+                        dayPart + monthPart.toString()
+                    }
+                }
+
+                5 -> {
+                    val dayAndMonthPart = input.take(4)
+                    val yearPart = input.substring(4, 5).toIntOrNull()?.coerceIn(1, 2) ?: 1
+                    dayAndMonthPart + yearPart.toString()
+                }
+
+                6 -> {
+                    val dayAndMonthPart = input.take(4)
+                    var yearPart = input.substring(4, 6).toIntOrNull()?.coerceIn(19, 20) ?: 19
+                    if (yearPart == 19 && input.substring(4, 5) == "2") yearPart = 20
+                    dayAndMonthPart + yearPart.toString()
                 }
 
                 8 -> {
@@ -346,9 +367,8 @@ object RegisterScreen {
 
             val offsetTranslator = object : OffsetMapping {
                 override fun originalToTransformed(offset: Int): Int {
-                    if (offset >= transformedText.length) {
-                        return transformedText.length
-                    }
+                    if (offset >= 4) return offset + 2
+                    if (offset >= 2) return offset + 1
                     return offset
                 }
 
@@ -357,6 +377,7 @@ object RegisterScreen {
                     val transformedOffset =
                         transformedText.text.substring(0, originalOffset).count { it != '.' }
                     return min(transformedOffset, text.length)
+
                 }
             }
 
