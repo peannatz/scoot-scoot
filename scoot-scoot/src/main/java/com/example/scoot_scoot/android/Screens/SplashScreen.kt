@@ -72,6 +72,6 @@ object SplashScreen {
         delay(500)
         isVisible.value = false;
         delay(500)
-        navController.navigate(Screens.Dashboard)
+        navController.navigate(Screens.Login)
     }
 }
