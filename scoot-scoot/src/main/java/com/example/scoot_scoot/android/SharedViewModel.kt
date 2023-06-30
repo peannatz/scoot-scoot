@@ -15,7 +15,5 @@ class SharedViewModel : ViewModel() {
 
     var sheetState = ModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden,
         confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded })
-
-    var updateScooterInfo=false
 }
 

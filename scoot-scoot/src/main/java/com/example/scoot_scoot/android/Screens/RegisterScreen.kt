@@ -34,7 +34,7 @@ import androidx.navigation.NavController
 import com.example.scoot_scoot.android.R
 
 
-@UnstableApi object RegisterScreen {
+object RegisterScreen {
     @Composable
     fun RegisterScreen(navController: NavController) {
         val name = remember { mutableStateOf(TextFieldValue()) }
