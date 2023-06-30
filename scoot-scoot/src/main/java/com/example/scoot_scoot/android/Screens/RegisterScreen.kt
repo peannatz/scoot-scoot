@@ -36,6 +36,10 @@ import androidx.navigation.NavController
 import com.example.scoot_scoot.android.NetworkClient
 import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.ViewModels.RegisterViewModel
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object RegisterScreen {
     @Composable
@@ -64,7 +68,8 @@ object RegisterScreen {
             NameField(rvm)
             SurnameField(rvm)
             EmailField(rvm)
-            BirthdayField(rvm)
+            BirthdateField1(rvm)
+            //BirthdateField(rvm)
             PasswordField(rvm)
             PasswordConfirmationField(rvm)
             Row(
@@ -93,7 +98,8 @@ object RegisterScreen {
             Button(onClick = {
                 Thread {
                     rvm.register()
-                    val test = NetworkClient.makeRequest()
+                    NetworkClient.addUser(rvm.regUser)
+                    val test = NetworkClient.getScooterById(1)
                     println(test)
                 }.start()
             }, enabled = rvm.isEnabledRegisterButton.value) {
@@ -228,13 +234,14 @@ object RegisterScreen {
     }
 
     @Composable
-    fun BirthdayField(rvm: RegisterViewModel) {
+    fun BirthdateField(rvm: RegisterViewModel) {
+        val format = SimpleDateFormat("ddMMyyyy", Locale.ENGLISH)
         Box {
             TextField(
-                value = rvm.birthday.value,
+                value = format.format(rvm.birthdate.value).toString(),
                 onValueChange = {
-                    rvm.birthday.value = it
-                    if(rvm.birthday.value.length==8){
+                    rvm.birthdate.value = format.parse(it) as Date
+                    if(rvm.birthdate.value.toString().length==8){
                         rvm.validateBirthday()
                     }
                 },
@@ -247,11 +254,52 @@ object RegisterScreen {
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .align(Alignment.BottomCenter),
-                text = rvm.birthdayErrMsg.value,
+                text = rvm.birthdateErrMsg.value,
                 fontSize = 14.sp,
                 color = MaterialTheme.colors.error
             )
         }
+    }
+
+    @Composable
+    fun BirthdateField1(rvm: RegisterViewModel) {
+        Box {
+            val inputText = rvm.birthdate.value?.toInputString() ?: "DDMMYYYY"
+            TextField(
+                value = inputText,
+                onValueChange = { newValue ->
+                    val filteredValue = newValue.filter { it.isDigit() }
+                    rvm.birthdate.value = filteredValue.toDateOrNull()!!
+                    if (filteredValue.length == 8) {
+                        //rvm.validateBirthday()
+                    }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                label = { Text(text = "DD.MM.YYYY") },
+            )
+            Text(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.BottomCenter),
+                text = rvm.birthdateErrMsg.value,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.error
+            )
+        }
+    }
+
+    fun String.toDateOrNull(): Date? {
+        return try {
+            SimpleDateFormat("ddMMyyyy", Locale.ENGLISH).parse(this)
+        } catch (e: ParseException) {
+            null
+        }
+    }
+
+    fun Date.toInputString(): String {
+        val format = SimpleDateFormat("ddMMyyyy", Locale.ENGLISH)
+        return format.format(this)
     }
 
 
