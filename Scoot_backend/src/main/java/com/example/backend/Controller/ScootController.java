@@ -3,6 +3,7 @@ package com.example.backend.Controller;
 
 import com.example.backend.Entity.Scooter;
 import com.example.backend.Repository.ScooterRepository;
+import com.example.backend.Service.ScooterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +18,11 @@ import java.util.Optional;
 public class ScootController {
 
     ScooterRepository scooterRepository;
+    ScooterService scooterService;
 
-    public ScootController(ScooterRepository scooterRepository){
+    public ScootController(ScooterRepository scooterRepository, ScooterService scooterService){
         this.scooterRepository = scooterRepository;
+        this.scooterService = scooterService;
     }
 
     @PostMapping("/addScooter")
@@ -47,14 +50,6 @@ public class ScootController {
 
     @GetMapping("/getByBattery/{battery}")
     public List<Scooter> getScootersByBattery(@PathVariable int battery){
-        List<Scooter> scooterList = scooterRepository.findAll();
-        List<Scooter> scooterBatteryList = new ArrayList<>();
-        for (Scooter scooter:scooterList
-             ) {
-            if(scooter.getBattery() > battery){
-                scooterBatteryList.add(scooter);
-            }
-        }
-        return scooterBatteryList;
+        return scooterService.getScootersByBattery(battery);
     }
 }
