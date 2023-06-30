@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController("scooter")
+@RestController()
+@RequestMapping("/scooter")
 @CrossOrigin
 public class ScootController {
 

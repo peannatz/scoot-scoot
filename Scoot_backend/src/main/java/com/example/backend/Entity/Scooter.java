@@ -13,6 +13,7 @@ public class Scooter {
     private String name;
     private int x;
     private int y;
+    private int battery;
 
     public long getId() {
         return id;
@@ -53,6 +54,4 @@ public class Scooter {
     public void setBattery(int battery) {
         this.battery = battery;
     }
-
-    private int battery;
 }
