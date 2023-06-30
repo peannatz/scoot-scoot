@@ -12,6 +12,8 @@ public class Location {
 
     float x;
     float y;
+    @OneToOne(mappedBy = "location")
+    Scooter scooter;
 
     public int getId() {
         return id;
@@ -35,5 +37,13 @@ public class Location {
 
     public void setY(float y) {
         this.y = y;
+    }
+
+    public Scooter getScooter() {
+        return scooter;
+    }
+
+    public void setScooter(Scooter scooter) {
+        this.scooter = scooter;
     }
 }
