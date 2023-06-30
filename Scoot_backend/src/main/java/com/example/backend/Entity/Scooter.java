@@ -14,6 +14,7 @@ public class Scooter {
     private int x;
     private int y;
     private int battery;
+    private boolean available;
 
     public long getId() {
         return id;
@@ -53,5 +54,13 @@ public class Scooter {
 
     public void setBattery(int battery) {
         this.battery = battery;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 }
