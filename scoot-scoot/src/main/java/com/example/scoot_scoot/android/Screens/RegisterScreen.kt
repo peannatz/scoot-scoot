@@ -16,7 +16,6 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -32,12 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import com.example.scoot_scoot.android.NetworkClient
 import com.example.scoot_scoot.android.R
-import kotlinx.coroutines.launch
 
 
-@UnstableApi
 object RegisterScreen {
     @Composable
     fun RegisterScreen(navController: NavController) {
@@ -49,7 +45,6 @@ object RegisterScreen {
         val passwordConfirmation = remember { mutableStateOf(TextFieldValue()) }
         val termsAndConditions = remember { mutableStateOf(false) }
         val popup = remember { mutableStateOf(false) }
-        val coroutineScope = rememberCoroutineScope()
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -117,11 +112,7 @@ object RegisterScreen {
                     )
                 )
             }
-            Button(onClick = {
-                Thread {
-                    NetworkClient.makeRequest()
-                }.start()
-            }) {
+            Button(onClick = { /*TODO*/ }) {
                 Text(text = "Register")
             }
         }
