@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController("/user")
+@RestController()
+@RequestMapping("/user")
 @CrossOrigin
 public class UserController {
 
@@ -19,14 +20,19 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("/addUser")
-    public ResponseEntity<String> addUser(User user){
+    @PostMapping("/add")
+    public ResponseEntity<String> addUser(@RequestBody User user){
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
 
-    @GetMapping("/getUser/{id}")
-    public Optional<User> getUser(@PathVariable int id){
+    @GetMapping("/getbyId/{id}")
+    public Optional<User> getById(@PathVariable int id){
         return userRepository.findById(id);
+    }
+
+    @GetMapping("/getByEmail/{email}")
+    public Optional<User> getByEmail(@PathVariable String email){
+        return userRepository.findByEmail(email);
     }
 }

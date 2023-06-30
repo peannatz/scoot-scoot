@@ -17,7 +17,7 @@ public class User {
     @Column(unique = true)
     private String email;
     private String password;
-    private Date birthdate;
+    private String birthdate;
 
     public long getId() {
         return id;
@@ -51,11 +51,11 @@ public class User {
         this.email = email;
     }
 
-    public Date getBirthdate() {
+    public String getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(Date birthdate) {
+    public void setBirthdate(String birthdate) {
         this.birthdate = birthdate;
     }
 
