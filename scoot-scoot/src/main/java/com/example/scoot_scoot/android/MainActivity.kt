@@ -11,12 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.scoot_scoot.android.Screens.Dashboard.Dashboard
-import com.example.scoot_scoot.android.Screens.LoginScreen
 import com.example.scoot_scoot.android.Screens.LoginScreen.LoginScreen
 import com.example.scoot_scoot.android.Screens.MapScreen.MapScreen
-import com.example.scoot_scoot.android.Screens.ProfileScreen
 import com.example.scoot_scoot.android.Screens.ProfileScreen.ProfileScreen
-import com.example.scoot_scoot.android.Screens.RegisterScreen
 import com.example.scoot_scoot.android.Screens.RegisterScreen.RegisterScreen
 import com.example.scoot_scoot.android.Screens.Screens
 import com.example.scoot_scoot.android.Screens.SplashScreen.SplashScreen
@@ -42,7 +39,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screens.Register) {
+    NavHost(navController = navController, startDestination = Screens.Profile) {
         composable(Screens.Splash) {
             SplashScreen(navController)
         }
