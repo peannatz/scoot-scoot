@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.R
-import com.example.scoot_scoot.android.Scooter
+import com.example.scoot_scoot.android.Data.Scooter
 import com.example.scoot_scoot.android.ViewModels.SharedViewModel
 import com.google.maps.android.compose.GoogleMap
 import kotlinx.coroutines.CoroutineScope
