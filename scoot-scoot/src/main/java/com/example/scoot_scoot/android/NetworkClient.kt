@@ -15,26 +15,23 @@ object NetworkClient {
         .hostnameVerifier { _, _ -> true }
         .build()
 
-    private val baseUrl = "http://10.0.2.2:8080"
+    private val baseUrl = "http://10.0.2.2:8080/"
 
     fun getScooterById(id: Int): String? {
-        val url = "${baseUrl}/getScooter/$id"
+        val url = "${baseUrl}scooter/getScooter/$id"
         return getRequest(url)
     }
 
-    fun addUser(userData: RegisterUser) {
-        val url = "${baseUrl}/addUser"
+    fun addUser(userData: RegisterUser): Boolean {
+        val url = "${baseUrl}user/add"
 
         val gson = Gson()
         val jsonPayload = gson.toJson(userData)
 
-        print(
-            jsonPayload
-        )
-        postRequest(url, jsonPayload)
+        return postRequest(url, jsonPayload)
     }
 
-    private fun postRequest(url: String, body: String) {
+    private fun postRequest(url: String, body: String): Boolean{
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = RequestBody.create(mediaType, body)
         val request = Request.Builder()
@@ -46,12 +43,15 @@ object NetworkClient {
             val response: Response = client.newCall(request).execute()
             if (!response.isSuccessful) {
                 println("Unsuccessful response: ${response.code} ${response.message}")
+                return false
             }else{
-                println(response.body)
+                println(response.message)
+                return true
             }
         } catch (e: IOException) {
             e.printStackTrace()
         }
+        return false
     }
 
     private fun getRequest(url: String): String? {

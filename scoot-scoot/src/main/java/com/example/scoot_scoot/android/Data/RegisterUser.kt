@@ -5,6 +5,5 @@ data class RegisterUser(
     var surname: String = "",
     var email: String = "",
     var birthdate: String = "",
-    //var password: String = "",
-    //var confirmPassword: String = ""
+    var password: String = "",
 )
