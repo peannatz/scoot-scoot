@@ -4,7 +4,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.lifecycle.ViewModel
-import com.example.scoot_scoot.android.Scooter
+import com.example.scoot_scoot.android.Data.Scooter
 import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterialApi::class)
