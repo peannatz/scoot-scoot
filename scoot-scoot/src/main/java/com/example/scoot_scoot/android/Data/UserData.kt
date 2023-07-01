@@ -1,6 +1,6 @@
 package com.example.scoot_scoot.android.Data
 
-data class RegisterUser(
+data class UserData(
     var name: String = "",
     var surname: String = "",
     var email: String = "",
