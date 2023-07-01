@@ -27,18 +27,16 @@ fun MyApplicationTheme(
             primaryVariant = Color(0xff0c4d49),
             secondary = Color(0xFFa40043),
             onPrimary = Color(0xFF81CBCE),
-            onSecondary = Color(0xFFFDE0F6),
-            error = Color(0xFFD83678)
+            onSecondary = Color(0xFFE1F2F3)
         )
     } else {
         lightColors(
             background = Color(0xFFE1F2F3),
-            primary = Color(0xFF089696),
-            primaryVariant = Color(0xff0b6966),
-            secondary = Color(0xFFF278DC),
-            onPrimary = Color(0xff0c4d49),
-            onSecondary = Color(0xFFE1F2F3),
-            error = Color(0xFFa40043)
+            primary = Color(0xFF81CBCE),
+            primaryVariant = Color(0xFF0B6966),
+            secondary = Color(0xFFE4A5D8),
+            onPrimary = Color(0xFF0C4D49),
+            onSecondary = Color(0xFF05504B)
         )
     }
     val typography = Typography(
