@@ -14,8 +14,10 @@ public class User {
 
     private String name;
     private String surname;
+    @Column(unique = true)
     private String email;
-    private Date birthdate;
+    private String password;
+    private String birthdate;
 
     public long getId() {
         return id;
@@ -49,11 +51,19 @@ public class User {
         this.email = email;
     }
 
-    public Date getBirthdate() {
+    public String getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(Date birthdate) {
+    public void setBirthdate(String birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

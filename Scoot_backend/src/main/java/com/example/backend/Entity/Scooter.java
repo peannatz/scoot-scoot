@@ -11,8 +11,11 @@ public class Scooter {
     private long id;
 
     private String name;
-    private int x;
-    private int y;
+    private int battery;
+    private boolean available;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    private Location location;
 
     public long getId() {
         return id;
@@ -30,22 +33,6 @@ public class Scooter {
         this.name = name;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
     public int getBattery() {
         return battery;
     }
@@ -54,5 +41,19 @@ public class Scooter {
         this.battery = battery;
     }
 
-    private int battery;
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 }

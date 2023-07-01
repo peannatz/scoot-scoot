@@ -1,4 +1,4 @@
-package com.example.scoot_scoot.android
+package com.example.scoot_scoot.android.Data
 
 import java.math.BigDecimal
 
