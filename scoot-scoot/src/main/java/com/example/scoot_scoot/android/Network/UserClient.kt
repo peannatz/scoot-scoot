@@ -26,7 +26,7 @@ object UserClient : NetworkClient() {
     }
 
     fun updateUser(id: Int, userData: UserData): Boolean {
-        val url = "${baseUrl}update/$id"
+        val url = "${baseUrl}user/update/$id"
         val jsonPayload = gson.toJson(userData)
         return postRequest(url, jsonPayload)
     }
