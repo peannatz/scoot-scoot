@@ -7,4 +7,5 @@ object Screens {
     const val Profile = "Profile"
     const val Register = "Register"
     const val Login = "Login"
+    const val AlcTest = "AlcTest"
 }
