@@ -1,6 +1,7 @@
 package com.example.scoot_scoot.android.Screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -19,48 +21,90 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.TextFieldDefaults.indicatorLine
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.Components.ProfileBottomBar.ProfileBottomBar
+import com.example.scoot_scoot.android.R
+import com.example.scoot_scoot.android.ViewModels.ProfileViewModel
 
 object ProfileScreen {
     @Composable
-    fun ProfileScreen(navController: NavController) {
-        //TODO: Add clickability and option to edit and move to own component
-        Scaffold(
-            bottomBar = {
-                BottomAppBar(modifier = Modifier.height(70.dp)){ ProfileBottomBar(navController)}
-            }
-        ) { paddingValues ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(paddingValues)
+    fun ProfileScreen(navController: NavController, pvm: ProfileViewModel = viewModel()) {
+        if (pvm.userFetched.value) {
+            Scaffold(
+                bottomBar = {
+                    BottomAppBar(modifier = Modifier.height(70.dp)) { ProfileBottomBar(navController) }
+                }
+            ) { paddingValues ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(paddingValues)
 
-            ) {
-                UserDataEntry(type = "Surname", data = "Uwe", editable = true)
-                UserDataEntry(type = "Name", data = "Uwington", editable = true)
-                UserDataEntry(type = "Email", data = "uwe@uwe.de", editable = true)
-                UserDataEntry(type = "Birthday", data = "01.01.1990", editable = false)
+                ) {
+                    println("user" + pvm.userData.toString())
+                    UserDataEntry(
+                        type = "Surname",
+                        data = pvm.surname,
+                        edited = pvm.surnameEdited,
+                        editable = true
+                    )
+                    UserDataEntry(
+                        type = "Name",
+                        data = pvm.name,
+                        edited = pvm.nameEdited,
+                        editable = true
+                    )
+                    UserDataEntry(
+                        type = "Email",
+                        data = pvm.email,
+                        edited = pvm.emailEdited,
+                        editable = true
+                    )
+                    UserDataEntry(
+                        type = "Birthday",
+                        data = pvm.birthdate,
+                        editable = false
+                    )
+                }
             }
         }
     }
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun UserDataEntry(type: String, data: String, editable: Boolean) {
+    fun UserDataEntry(
+        type: String,
+        data: MutableState<String>,
+        edited: MutableState<Boolean> = mutableStateOf(false),
+        editable: Boolean
+    ) {
         val interactionSource = remember { MutableInteractionSource() }
+        val inEditMode = remember { mutableStateOf(false) }
+        val focusManager = LocalFocusManager.current
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -71,13 +115,19 @@ object ProfileScreen {
                 )
         ) {
             BasicTextField(
-                value = data,
-                onValueChange = { it },
+                value = data.value,
+                onValueChange = {
+                    data.value = it
+                    //pvm.validateName()
+                    edited.value = true
+                },
                 singleLine = true,
+                enabled = inEditMode.value,
                 interactionSource = interactionSource,
-                readOnly = !editable,
                 textStyle = TextStyle(
-                    fontSize = 40.sp, color = MaterialTheme.colors.onPrimary
+                    fontSize = 40.sp,
+                    color = MaterialTheme.colors.onPrimary,
+                    textDecoration = TextDecoration.None
                 ),
                 decorationBox = { innerTextField ->
                     Row(
@@ -86,25 +136,42 @@ object ProfileScreen {
                             .fillMaxSize()
                     ) {
                         TextFieldDefaults.TextFieldDecorationBox(
-                            value = data,
+                            value = data.value,
                             label = { Text(text = type, style = TextStyle(fontSize = 20.sp)) },
                             innerTextField = innerTextField,
                             singleLine = true,
-                            enabled = true,
+                            enabled = inEditMode.value,
                             visualTransformation = VisualTransformation.None,
                             trailingIcon = {
                                 if (editable) {
-                                    Icon(
-                                        imageVector = Icons.Default.KeyboardArrowRight,
-                                        contentDescription = "Editable Field",
-                                        modifier = Modifier.size(80.dp)
-                                    )
+                                    if (inEditMode.value) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.save),
+                                            contentDescription = "Editable Field",
+                                            modifier = Modifier
+                                                .size(80.dp)
+                                                .clickable {
+                                                    inEditMode.value = false;
+                                                    focusManager.clearFocus()
+                                                }
+                                        )
+                                    } else {
+                                        Icon(
+                                            imageVector = Icons.Default.Edit,
+                                            contentDescription = "Editable Field",
+                                            modifier = Modifier
+                                                .size(80.dp)
+                                                .clickable {
+                                                    inEditMode.value = true
+                                                }
+                                        )
+                                    }
                                 }
                             },
                             interactionSource = interactionSource,
                         )
                     }
-                },
+                }
             )
         }
     }

@@ -22,7 +22,7 @@ object ProfileBottomBar {
         BottomNavigation(
             modifier = Modifier.fillMaxHeight(),
             backgroundColor = MaterialTheme.colors.primary,
-            contentColor = MaterialTheme.colors.onSecondary
+            contentColor = MaterialTheme.colors.onPrimary
         ) {
             BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
                 Icon(

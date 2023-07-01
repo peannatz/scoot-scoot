@@ -1,7 +1,5 @@
-package com.example.scoot_scoot.android
+package com.example.scoot_scoot.android.Network
 
-import com.example.scoot_scoot.android.Data.RegisterUser
-import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -9,29 +7,15 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
 
-object NetworkClient {
+abstract class NetworkClient {
 
     private val client: OkHttpClient = OkHttpClient.Builder()
         .hostnameVerifier { _, _ -> true }
         .build()
 
-    private val baseUrl = "http://10.0.2.2:8080/"
+    protected val baseUrl = "http://10.0.2.2:8080/"
 
-    fun getScooterById(id: Int): String? {
-        val url = "${baseUrl}scooter/getScooter/$id"
-        return getRequest(url)
-    }
-
-    fun addUser(userData: RegisterUser): Boolean {
-        val url = "${baseUrl}user/add"
-
-        val gson = Gson()
-        val jsonPayload = gson.toJson(userData)
-
-        return postRequest(url, jsonPayload)
-    }
-
-    private fun postRequest(url: String, body: String): Boolean{
+    protected fun postRequest(url: String, body: String): Boolean {
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = RequestBody.create(mediaType, body)
         val request = Request.Builder()
@@ -44,7 +28,7 @@ object NetworkClient {
             if (!response.isSuccessful) {
                 println("Unsuccessful response: ${response.code} ${response.message}")
                 return false
-            }else{
+            } else {
                 println(response.message)
                 return true
             }
@@ -54,7 +38,7 @@ object NetworkClient {
         return false
     }
 
-    private fun getRequest(url: String): String? {
+    protected fun getRequest(url: String): String? {
         val request = Request.Builder()
             .url(url)
             .build()

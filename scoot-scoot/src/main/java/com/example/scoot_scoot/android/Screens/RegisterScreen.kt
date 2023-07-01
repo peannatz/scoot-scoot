@@ -33,8 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.scoot_scoot.android.Data.UserManager
-import com.example.scoot_scoot.android.NetworkClient
+import com.example.scoot_scoot.android.Network.UserClient
 import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.ViewModels.RegisterViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -98,7 +97,7 @@ object RegisterScreen {
             Button(onClick = {
                 CoroutineScope(Dispatchers.IO).launch {
                     rvm.register()
-                    val success = NetworkClient.addUser(rvm.regUser)
+                    val success = UserClient.addUser(rvm.userData)
                     withContext(Dispatchers.Main) {
                         if (success) {
                             navController.navigate(Screens.Map)
