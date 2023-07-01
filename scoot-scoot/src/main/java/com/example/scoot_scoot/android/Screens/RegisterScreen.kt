@@ -25,6 +25,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -32,9 +33,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.NetworkClient
 import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.ViewModels.RegisterViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.min
 
 object RegisterScreen {
@@ -90,12 +96,16 @@ object RegisterScreen {
                 )
             }
             Button(onClick = {
-                Thread {
+                CoroutineScope(Dispatchers.IO).launch {
                     rvm.register()
-                    NetworkClient.addUser(rvm.regUser)
-                    val test = NetworkClient.getScooterById(1)
-                    println(test)
-                }.start()
+                    val success = NetworkClient.addUser(rvm.regUser)
+                    withContext(Dispatchers.Main) {
+                        if (success) {
+                            navController.navigate(Screens.Map)
+                        }
+                        // TODO: Error Handling???
+                    }
+                }
             }, enabled = rvm.isEnabledRegisterButton.value) {
                 Text(text = "Register")
             }
@@ -116,8 +126,9 @@ object RegisterScreen {
                     rvm.validateName()
                 },
                 label = { Text(text = "Name") },
-                singleLine = true
-            )
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                )
             Text(
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -140,7 +151,8 @@ object RegisterScreen {
                 },
                 label = { Text(text = "Surname") },
                 singleLine = true,
-            )
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                )
             Text(
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -216,6 +228,7 @@ object RegisterScreen {
                     rvm.validatePassword()
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation(),
                 singleLine = true,
                 label = { Text(text = "Password") },
             )
@@ -241,6 +254,7 @@ object RegisterScreen {
                     rvm.validateConfirmPassword()
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation(),
                 singleLine = true,
                 label = { Text(text = "Confirm Password") },
             )

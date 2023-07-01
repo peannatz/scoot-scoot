@@ -5,9 +5,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.scoot_scoot.android.Data.RegisterUser
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class RegisterViewModel : ViewModel() {
 
@@ -29,12 +31,10 @@ class RegisterViewModel : ViewModel() {
     var isEmailInvalid: MutableState<Boolean> = mutableStateOf(false)
     var emailErrMsg: MutableState<String> = mutableStateOf("")
 
-    //var password: MutableState<String> = mutableStateOf(regUser.password)
-    var password: MutableState<String> = mutableStateOf("")
+    var password: MutableState<String> = mutableStateOf(regUser.password)
     var isPasswordInvalid: MutableState<Boolean> = mutableStateOf(false)
     var passwordErrMsg: MutableState<String> = mutableStateOf("")
 
-    //var confirmPassword: MutableState<String> = mutableStateOf(regUser.confirmPassword)
     var confirmPassword: MutableState<String> = mutableStateOf("")
     var isConfirmPasswordInvalid: MutableState<Boolean> = mutableStateOf(false)
     var confPasswordErrMsg: MutableState<String> = mutableStateOf("")
@@ -79,7 +79,6 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun validateBirthdate() {
-        //TODO:check formatting
         val today = LocalDate.now()
         val formatter = DateTimeFormatter.ofPattern("ddMMyyyy")
         val birthday = LocalDate.parse(birthdate.value, formatter)
@@ -105,9 +104,9 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun validatePassword() {
-        if (password.value != "123") {
+        if (password.value.length < 8) {
             isPasswordInvalid.value = true
-            passwordErrMsg.value = "Password should be 123"
+            passwordErrMsg.value = "Min. password length: 8"
         } else {
             isPasswordInvalid.value = false
             passwordErrMsg.value = ""
@@ -131,19 +130,27 @@ class RegisterViewModel : ViewModel() {
     }
 
     fun register() {
+        val birthdate=formattedDateString()
         regUser.name = name.value
         regUser.surname = surname.value
-        regUser.birthdate = birthdate.value
+        regUser.birthdate = birthdate
         regUser.email = email.value
-        //regUser.password = password.value
-        //regUser.confirmPassword = confirmPassword.value
+        regUser.password = password.value
         Log.d("name", name.value)
         Log.d("surname", surname.value)
-        Log.d("Birthdate", birthdate.value)
+        Log.d("Birthdate", birthdate)
         Log.d("email", email.value)
         Log.d("password", password.value)
         Log.d("confirmPassword", confirmPassword.value)
         Log.d("user", regUser.toString())
+    }
+
+    private fun formattedDateString(): String{
+        val dateParser=SimpleDateFormat("ddMMyyyy", Locale.getDefault())
+        val birthdateAsDate=dateParser.parse(birthdate.value)
+        val dateFormater=SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        val formattedBirthdate= birthdateAsDate?.let { dateFormater.format(it) }
+        return formattedBirthdate as String
     }
 
 }
