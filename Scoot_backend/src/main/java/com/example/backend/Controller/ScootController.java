@@ -25,10 +25,10 @@ public class ScootController {
     }
 
     @PostMapping("/addScooter")
-    public ResponseEntity<String> addScooter(@RequestBody Scooter scooter){
+    public Scooter addScooter(@RequestBody Scooter scooter){
         scooterRepository.save(scooter);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Scooter created");
+        return scooter;
 
     }
 
