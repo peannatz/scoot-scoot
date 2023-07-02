@@ -3,6 +3,7 @@ package com.example.scoot_scoot.android.ViewModels
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.example.scoot_scoot.android.Repository.UserRepository
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
@@ -10,6 +11,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class RegisterViewModel : UserDataViewModel() {
+
+    val userRepository=UserRepository()
 
     var isBirthdateInvalid: MutableState<Boolean> = mutableStateOf(false)
     var birthdateErrMsg: MutableState<String> = mutableStateOf("")
@@ -49,7 +52,7 @@ class RegisterViewModel : UserDataViewModel() {
         handleInputChange()
     }
 
-    fun register() {
+    suspend fun register() {
         val birthdate=formattedDateString()
         userData.name = name.value
         userData.surname = surname.value
@@ -63,6 +66,7 @@ class RegisterViewModel : UserDataViewModel() {
         Log.d("password", password.value)
         Log.d("confirmPassword", confirmPassword.value)
         Log.d("user", userData.toString())
+        userRepository.registerUser(userData)
     }
 
     private fun formattedDateString(): String{
