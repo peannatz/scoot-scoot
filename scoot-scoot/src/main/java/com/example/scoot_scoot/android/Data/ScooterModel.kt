@@ -1,7 +1,7 @@
 package com.example.scoot_scoot.android.Data
 
 
-data class Scooter(
+data class ScooterModel(
     val id: Long,
     val name: String,
     val battery: Int,

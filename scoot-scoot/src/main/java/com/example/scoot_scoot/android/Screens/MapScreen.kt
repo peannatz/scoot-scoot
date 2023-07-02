@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,60 +50,83 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.Data.Location
 import com.example.scoot_scoot.android.R
-import com.example.scoot_scoot.android.Data.Scooter
+import com.example.scoot_scoot.android.Data.ScooterModel
+import com.example.scoot_scoot.android.ViewModels.MapViewModel
 import com.example.scoot_scoot.android.ViewModels.SharedViewModel
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberMarkerState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 object MapScreen {
 
     private lateinit var coroutineScope: CoroutineScope
-    private lateinit var model: SharedViewModel
     private var updateScooterInfo = false
 
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun MapScreen(navController: NavController) {
+    fun MapScreen(navController: NavController, mvm: MapViewModel = viewModel()) {
+
         var bottomSheetContent: (@Composable () -> Unit)? by remember {
             mutableStateOf(null)
         }
         coroutineScope = rememberCoroutineScope()
-        model = viewModel()
 
         val toggleBottomSheet: () -> Unit = {
             if (updateScooterInfo) {
-                bottomSheetContent = { UpdateScooterInfoInBottomSheet() }
+                bottomSheetContent = { UpdateScooterInfoInBottomSheet(mvm) }
             }
-            if (model.sheetState.isVisible && !updateScooterInfo) {
-                coroutineScope.launch { model.sheetState.hide() }
+            if (mvm.sheetState.isVisible && !updateScooterInfo) {
+                coroutineScope.launch { mvm.sheetState.hide() }
             } else {
-                coroutineScope.launch { model.sheetState.show() }
+                coroutineScope.launch { mvm.sheetState.show() }
             }
             updateScooterInfo = false
         }
 
-        if (!Build.DEVICE.contains("emu")) {
-            MockMapFunctionality(
-                onMapClick = { toggleBottomSheet() },
+
+
+        if (Build.DEVICE.contains("emu")) {
+            MockMapFunctionality(mvm,
                 onButtonClick = { toggleBottomSheet() })
             RenderMapUi(navController)
-            PrepareBottomSheet(bottomSheetContent)
+            PrepareBottomSheet(mvm, bottomSheetContent)
 
         } else {
+            val sydney = LatLng(-33.852, 151.211)
+            val items by mvm.items.collectAsState()
+
             GoogleMap(modifier = Modifier.fillMaxHeight(),
-                onMapClick = { toggleBottomSheet() })
+                onMapClick = { toggleBottomSheet() }) {
+                items.forEach { item ->
+                    val position=LatLng(item.location.x.toDouble(),item.location.y.toDouble())
+                    Marker(
+                        state = rememberMarkerState(position = position),
+                        title = item.name,
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                    )
+                }
+            }
         }
     }
-
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun PrepareBottomSheet(
+        mvm: MapViewModel,
         bottomSheetContent: @Composable (() -> Unit)?
     ) {
-        val modalSheetState = model.sheetState
+        val modalSheetState = mvm.sheetState
         ModalBottomSheetLayout(
             sheetState = modalSheetState,
             sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
@@ -116,14 +140,14 @@ object MapScreen {
     }
 
     @Composable
-    fun UpdateScooterInfoInBottomSheet() {
+    fun UpdateScooterInfoInBottomSheet(mvm: MapViewModel) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(horizontal = 40.dp, vertical = 20.dp)
                 .fillMaxWidth()
         ) {
-            Text(text = model.selectedScooter.name, fontSize = 30.sp)
+            Text(text = mvm.selectedScooter.name, fontSize = 30.sp)
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
@@ -150,7 +174,7 @@ object MapScreen {
                     fontSize = 15.sp
                 )
             }
-            val name = "s" + model.selectedScooter.id.toString()
+            val name = "s" + mvm.selectedScooter.id.toString()
             val context = LocalContext.current
             val drawableId = remember(name) {
                 context.resources.getIdentifier(
@@ -219,16 +243,16 @@ object MapScreen {
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun MockMapFunctionality(
-        onMapClick: () -> Unit,
+        mvm: MapViewModel,
         onButtonClick: () -> Unit
     ) {
 
         Box(modifier = Modifier.fillMaxHeight()) {
             val scooters = arrayOf(
-                Scooter(0, "ScooterBoi", 50,false,Location(1,3f,5f)),
-                Scooter(1, "ScootyMcScootface", 40,true, Location(2,4f,9f)),
-                Scooter(2, "iScoot", 60, true,Location(3, 5f,9f)),
-                Scooter(3, "Scootie Doo", 60, true, Location (4, 6f,9f)),
+                ScooterModel(0, "ScooterBoi", 50, false, Location(1, 3f, 5f)),
+                ScooterModel(1, "ScootyMcScootface", 40, true, Location(2, 4f, 9f)),
+                ScooterModel(2, "iScoot", 60, true, Location(3, 5f, 9f)),
+                ScooterModel(3, "Scootie Doo", 60, true, Location(4, 6f, 9f)),
             )
 
             Image(
@@ -236,12 +260,13 @@ object MapScreen {
                 contentDescription = "",
                 modifier = Modifier
                     .fillMaxHeight()
-                    .clickable { coroutineScope.launch { model.sheetState.hide() } },
+                    .clickable { coroutineScope.launch { mvm.sheetState.hide() } },
                 contentScale = ContentScale.FillHeight,
             )
             LazyColumn(verticalArrangement = Arrangement.Center) {
                 items(scooters) { scooter ->
                     DisplayScooterData(
+                        mvm,
                         scooter = scooter, onButtonClick
                     )
                 }
@@ -251,7 +276,8 @@ object MapScreen {
 
     @Composable
     fun DisplayScooterData(
-        scooter: Scooter,
+        mvm: MapViewModel,
+        scooter: ScooterModel,
         onButtonClick: () -> Unit
     ) {
         Row() {
@@ -261,7 +287,7 @@ object MapScreen {
             Button(
                 onClick = {
                     updateScooterInfo = true
-                    model.UpdateSelectedScooter(scooter)
+                    mvm.UpdateSelectedScooter(scooter)
                     onButtonClick()
                 },
                 shape = RoundedCornerShape(50),
