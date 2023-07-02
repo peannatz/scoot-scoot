@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.Network.UserClient
@@ -95,8 +96,10 @@ object RegisterScreen {
                 )
             }
             Button(onClick = {
-                CoroutineScope(Dispatchers.IO).launch {
+                rvm.viewModelScope.launch(Dispatchers.IO) {
                     rvm.register()
+                }
+                CoroutineScope(Dispatchers.IO).launch {
                     val success = UserClient.addUser(rvm.userData)
                     withContext(Dispatchers.Main) {
                         if (success) {
@@ -127,7 +130,7 @@ object RegisterScreen {
                 label = { Text(text = "Name") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                )
+            )
             Text(
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -151,7 +154,7 @@ object RegisterScreen {
                 label = { Text(text = "Surname") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                )
+            )
             Text(
                 modifier = Modifier
                     .padding(start = 8.dp)

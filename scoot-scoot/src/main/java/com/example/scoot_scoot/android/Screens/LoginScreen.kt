@@ -16,7 +16,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,16 +24,36 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.R
+import com.example.scoot_scoot.android.ViewModels.LoginCallback
+import com.example.scoot_scoot.android.ViewModels.LoginViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object LoginScreen {
+
+
     @Composable
-    fun LoginScreen(navController: NavController) {
+    fun LoginScreen(navController: NavController, lvm: LoginViewModel = viewModel()) {
+
+        val loginCallback = remember {
+            object : LoginCallback {
+                override fun onLoginSuccess() {
+                    navController.navigate(Screens.Map)
+                }
+
+                override fun onLoginError(errorMessage: String) {
+                    // Handle error navigation
+                }
+            }
+        }
+
         Box(modifier = Modifier.fillMaxSize()) {
             ClickableText(
                 //TODO: Find a better font
@@ -62,26 +81,30 @@ object LoginScreen {
                 contentDescription = "",
                 modifier = Modifier.size(width = 250.dp, height = 250.dp)
             )
-            val email = remember { mutableStateOf(TextFieldValue()) }
-            val password = remember { mutableStateOf(TextFieldValue()) }
 
             TextField(
-                value = email.value,
-                onValueChange = { email.value = it },
+                value = lvm.email.value,
+                onValueChange = { lvm.email.value = it },
                 label = { Text("Email") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
             Spacer(modifier = Modifier.height(20.dp))
             TextField(
-                value = password.value,
-                onValueChange = { password.value = it },
+                value = lvm.password.value,
+                onValueChange = { lvm.password.value = it },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 label = { Text("Password") },
-                //shape = RoundedCornerShape(0, 0, 20, 20)
+            )
+            Text(
+                modifier = Modifier
+                    .padding(top = 8.dp),
+                text = lvm.loginErrorMsg.value,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.secondary,
             )
             Button(
-                onClick = { },
+                onClick = { lvm.viewModelScope.launch(Dispatchers.IO) { lvm.checkLoginData(loginCallback) } },
                 modifier = Modifier.padding(top = 20.dp)
             ) {
                 Text(text = "Login", modifier = Modifier.padding(5.dp))

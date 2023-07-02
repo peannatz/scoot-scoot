@@ -49,7 +49,7 @@ abstract class NetworkClient {
                 response.body?.string()
             } else {
                 println("Unsuccessful response: ${response.code} ${response.message}")
-                null
+                return null
             }
         } catch (e: IOException) {
             // Handle the exception

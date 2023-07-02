@@ -25,6 +25,15 @@ object UserClient : NetworkClient() {
         return gson.fromJson(userJson, UserData::class.java)
     }
 
+    fun getUserByEmail(email: String): UserData? {
+
+        val url = "${baseUrl}user/getByEmail/$email"
+        val userJson = getRequest(url) ?: return null
+        return gson.fromJson(userJson, UserData::class.java)
+    }
+
+    //Update User
+
     fun updateUser(id: Int, userData: UserData): Boolean {
         val url = "${baseUrl}user/update/$id"
         val jsonPayload = gson.toJson(userData)
