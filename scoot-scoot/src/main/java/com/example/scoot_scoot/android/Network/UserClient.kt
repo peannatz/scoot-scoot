@@ -9,11 +9,15 @@ object UserClient : NetworkClient() {
 
     //Add User
 
-    fun addUser(userData: UserData): Boolean {
+    fun addUser(userData: UserData): UserData {
 
         val url = "${baseUrl}user/add"
         val jsonPayload = gson.toJson(userData)
-        return postRequest(url, jsonPayload)
+        //return gson.fromJson(userJson, UserData::class.java)
+        if(postRequest(url, jsonPayload)){
+            return getUserByID(2)
+        }
+        return UserData()
     }
 
     //Get User

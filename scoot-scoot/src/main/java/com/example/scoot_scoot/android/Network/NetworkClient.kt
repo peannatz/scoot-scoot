@@ -13,7 +13,10 @@ abstract class NetworkClient {
         .hostnameVerifier { _, _ -> true }
         .build()
 
-    protected val baseUrl = "http://10.0.2.2:8080/"
+    protected val emulatorUrl = "http://10.0.2.2:8080/"
+    protected val deviceUrl = "http://192.168.2.171:8080/"
+
+    protected val baseUrl = deviceUrl
 
     protected fun postRequest(url: String, body: String): Boolean {
         val mediaType = "application/json; charset=utf-8".toMediaType()
