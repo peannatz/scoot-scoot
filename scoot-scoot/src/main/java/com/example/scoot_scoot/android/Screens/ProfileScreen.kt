@@ -76,6 +76,8 @@ object ProfileScreen {
         }
     }
 
+    //TODO: Errormessage on invalid input
+
     @Composable
     fun EditIcon(inEditMode: MutableState<Boolean>, onEditModeExit: (Boolean) -> Unit) {
         val focusManager = LocalFocusManager.current

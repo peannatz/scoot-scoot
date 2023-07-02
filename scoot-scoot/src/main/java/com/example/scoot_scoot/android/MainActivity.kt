@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,8 +22,9 @@ import com.example.scoot_scoot.android.Screens.SplashScreen.SplashScreen
 
 class MainActivity : ComponentActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screens.AlcTest) {
+    NavHost(navController = navController, startDestination = Screens.Login) {
         composable(Screens.Splash) {
             SplashScreen(navController)
         }
