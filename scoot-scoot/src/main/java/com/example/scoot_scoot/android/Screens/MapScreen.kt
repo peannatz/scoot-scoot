@@ -47,14 +47,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.scoot_scoot.android.Data.Location
 import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.Data.Scooter
 import com.example.scoot_scoot.android.ViewModels.SharedViewModel
 import com.google.maps.android.compose.GoogleMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 object MapScreen {
 
@@ -84,7 +83,7 @@ object MapScreen {
             updateScooterInfo = false
         }
 
-        if (Build.DEVICE.contains("emu")) {
+        if (!Build.DEVICE.contains("emu")) {
             MockMapFunctionality(
                 onMapClick = { toggleBottomSheet() },
                 onButtonClick = { toggleBottomSheet() })
@@ -124,7 +123,7 @@ object MapScreen {
                 .padding(horizontal = 40.dp, vertical = 20.dp)
                 .fillMaxWidth()
         ) {
-            Text(text = model.selectedScooter.description, fontSize = 30.sp)
+            Text(text = model.selectedScooter.name, fontSize = 30.sp)
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
@@ -139,12 +138,14 @@ object MapScreen {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = model.selectedScooter.priceMin.setScale(2, RoundingMode.HALF_EVEN)
+                    //text = model.selectedScooter.priceMin.setScale(2, RoundingMode.HALF_EVEN)
+                    text = "0.5"
                         .toString(),
                     fontSize = 15.sp
                 )
                 Text(
-                    text = model.selectedScooter.priceKm.setScale(2, RoundingMode.HALF_EVEN)
+                    //text = model.selectedScooter.priceKm.setScale(2, RoundingMode.HALF_EVEN)
+                    text = "0.2"
                         .toString(),
                     fontSize = 15.sp
                 )
@@ -224,10 +225,10 @@ object MapScreen {
 
         Box(modifier = Modifier.fillMaxHeight()) {
             val scooters = arrayOf(
-                Scooter(0, "ScooterBoi", BigDecimal(0.5), BigDecimal(0.3)),
-                Scooter(1, "ScootyMcScootface", BigDecimal(0.6), BigDecimal(0.4)),
-                Scooter(2, "iScoot", BigDecimal(0.7), BigDecimal(0.5)),
-                Scooter(3, "Scootie Doo", BigDecimal(0.9), BigDecimal(0.6)),
+                Scooter(0, "ScooterBoi", 50,false,Location(1,3f,5f)),
+                Scooter(1, "ScootyMcScootface", 40,true, Location(2,4f,9f)),
+                Scooter(2, "iScoot", 60, true,Location(3, 5f,9f)),
+                Scooter(3, "Scootie Doo", 60, true, Location (4, 6f,9f)),
             )
 
             Image(
@@ -255,7 +256,7 @@ object MapScreen {
     ) {
         Row() {
             //Der text ist nicht sichtbar, aber so sieht das gemockt nicer aus
-            Text(text = scooter.description, Modifier.alpha(0f))
+            Text(text = scooter.name, Modifier.alpha(0f))
             val model: SharedViewModel = viewModel()
             Button(
                 onClick = {
