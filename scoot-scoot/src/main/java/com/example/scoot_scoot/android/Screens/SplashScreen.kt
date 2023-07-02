@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.R
 import kotlinx.coroutines.delay
 
@@ -72,6 +73,10 @@ object SplashScreen {
         delay(500)
         isVisible.value = false;
         delay(500)
-        navController.navigate(Screens.Login)
+        if(UserManager.isLoggedIn()){
+            navController.navigate(Screens.Map)
+        }else{
+            navController.navigate(Screens.Login)
+        }
     }
 }

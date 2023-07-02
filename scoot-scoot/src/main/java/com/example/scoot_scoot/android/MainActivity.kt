@@ -6,11 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.Screens.AlcoholTest.AlcoholTest
 import com.example.scoot_scoot.android.Screens.Dashboard.Dashboard
 import com.example.scoot_scoot.android.Screens.LoginScreen.LoginScreen
@@ -24,8 +24,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
         super.onCreate(savedInstanceState)
+        UserManager.init(this)
+
         setContent {
             MyApplicationTheme {
                 Surface(
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screens.Login) {
+    NavHost(navController = navController, startDestination = Screens.Splash) {
         composable(Screens.Splash) {
             SplashScreen(navController)
         }
