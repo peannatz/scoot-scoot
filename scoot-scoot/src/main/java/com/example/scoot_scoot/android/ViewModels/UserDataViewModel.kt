@@ -2,22 +2,53 @@ package com.example.scoot_scoot.android.ViewModels
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.scoot_scoot.android.Data.UserData
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.scoot_scoot.android.Repository.UserRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-abstract class UserDataViewModel: ViewModel() {
+abstract class UserDataViewModel(private val userId: Int? = null) : ViewModel() {
 
-    var userData: UserData = UserData()
+    //var userData: UserData = UserData()
+    protected val userRepository = UserRepository()
 
-    fun updateUser(updatedUser: UserData){
+    private val _fetchedUserData = MutableLiveData<UserData>()
+    val fetchedUserData: LiveData<UserData> get() = _fetchedUserData
+    var userData = UserData()
+
+    init {
+        if (userId != null) {
+            getData()
+        }
+    }
+
+    private fun getData() {
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                try {
+                    userData = userRepository.getUserById(userId!!)
+
+                } catch (e: Exception) {
+                    TODO("Error Handling")
+                }
+            }
+        }
+    }
+
+    fun updateUser(updatedUser: UserData) {
+        _fetchedUserData.postValue(userData)
         userData = updatedUser
-        name.value=userData.name
-        surname.value=userData.surname
-        email.value=userData.email
-        password.value=userData.password
-        birthdate.value=userData.birthdate
+        name.value = userData.name
+        surname.value = userData.surname
+        email.value = userData.email
+        password.value = userData.password
+        birthdate.value = userData.birthdate
     }
 
     var name: MutableState<String> = mutableStateOf(userData.name)
@@ -43,7 +74,7 @@ abstract class UserDataViewModel: ViewModel() {
     var birthdate: MutableState<String> = mutableStateOf(userData.birthdate)
 
     abstract fun handleInputChange()
-    
+
     fun validateName() {
         if (name.value.trim().isEmpty()) {
             isNameInvalid.value = true

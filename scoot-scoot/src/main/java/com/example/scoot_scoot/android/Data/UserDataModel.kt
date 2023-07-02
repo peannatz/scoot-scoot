@@ -6,5 +6,6 @@ data class UserDataModel(
     val type: String,
     val data: MutableState<String>,
     val edited: MutableState<Boolean>,
-    val validation: () -> Unit
+    val validation: () -> Unit,
+    //val ErrMsg: MutableState<String>,
 )

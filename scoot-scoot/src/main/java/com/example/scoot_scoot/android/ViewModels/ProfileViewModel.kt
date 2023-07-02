@@ -2,14 +2,13 @@ package com.example.scoot_scoot.android.ViewModels
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.example.scoot_scoot.android.Data.UserDataModel
-import com.example.scoot_scoot.android.Network.UserClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ProfileViewModel : UserDataViewModel() {
-
 
     lateinit var nameData: UserDataModel;
     lateinit var surnameData: UserDataModel;
@@ -19,7 +18,7 @@ class ProfileViewModel : UserDataViewModel() {
     //TODO:exchange hard coded id for account id
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            val fetchedUser = UserClient.getUserByID(3)
+            val fetchedUser = userRepository.getUserById(3)
             updateUser(fetchedUser)
             userFetched.value = true
             nameData = UserDataModel("Name", name, nameEdited) { validateName() }
@@ -40,17 +39,19 @@ class ProfileViewModel : UserDataViewModel() {
 
     override fun handleInputChange() {
 
-        if(nameData.edited.value){
-            userData.name=nameData.data.value
+        if (nameData.edited.value) {
+            userData.name = nameData.data.value
         }
-        if(surnameData.edited.value){
-            userData.surname=surnameData.data.value
+        if (surnameData.edited.value) {
+            userData.surname = surnameData.data.value
         }
-        if(emailData.edited.value){
-            userData.email=emailData.data.value
+        if (emailData.edited.value) {
+            userData.email = emailData.data.value
         }
 
-        UserClient.updateUser(3, userData)
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.updateUser(3, userData)
+        }
     }
 
 }

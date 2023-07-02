@@ -34,20 +34,35 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.scoot_scoot.android.Network.UserClient
 import com.example.scoot_scoot.android.R
+import com.example.scoot_scoot.android.ViewModels.RegisterCallback
 import com.example.scoot_scoot.android.ViewModels.RegisterViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.min
 
 object RegisterScreen {
+
     @Composable
     fun RegisterScreen(navController: NavController, rvm: RegisterViewModel = viewModel()) {
 
-        val popup = remember { mutableStateOf(false) }
+
+        val registerCallback = remember {
+            object : RegisterCallback {
+                override fun onRegisterSuccess() {
+                    MainScope().launch {
+                        navController.navigate(Screens.Map)
+                    }
+                }
+
+                override fun onRegisterError(errorMessage: String) {
+                    //500er code handeln doppele mail adresse
+                }
+            }
+        }
+
+        val popupVisible = remember { mutableStateOf(false) }
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -87,7 +102,7 @@ object RegisterScreen {
                 )
                 ClickableText(
                     text = AnnotatedString("terms and conditions"),
-                    onClick = { popup.value = !popup.value },
+                    onClick = { popupVisible.value = !popupVisible.value },
                     style = TextStyle(
                         color = MaterialTheme.colors.secondary,
                         fontSize = 15.sp,
@@ -97,23 +112,15 @@ object RegisterScreen {
             }
             Button(onClick = {
                 rvm.viewModelScope.launch(Dispatchers.IO) {
-                    rvm.register()
-                }
-                CoroutineScope(Dispatchers.IO).launch {
-                    val success = UserClient.addUser(rvm.userData)
-                    withContext(Dispatchers.Main) {
-                        if (success) {
-                            navController.navigate(Screens.Map)
-                        }
-                        // TODO: Error Handling???
-                    }
+                    //Callback
+                    rvm.register(registerCallback)
                 }
             }, enabled = rvm.isEnabledRegisterButton.value) {
                 Text(text = "Register")
             }
         }
-        if (popup.value) {
-            Popup.Show(popup)
+        if (popupVisible.value) {
+            Popup.Show(popupVisible)
         }
 
     }

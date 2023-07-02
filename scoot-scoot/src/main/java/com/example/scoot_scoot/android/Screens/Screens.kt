@@ -8,4 +8,5 @@ object Screens {
     const val Register = "Register"
     const val Login = "Login"
     const val AlcTest = "AlcTest"
+    const val Help = "HelpScreen"
 }

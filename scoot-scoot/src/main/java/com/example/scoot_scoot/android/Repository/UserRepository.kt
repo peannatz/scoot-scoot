@@ -14,7 +14,21 @@ class UserRepository {
         }
     }
 
-    suspend fun registerUser(user: UserData){
+    suspend fun registerUser(user: UserData): Boolean {
+        return withContext(Dispatchers.IO) {
+            UserClient.addUser(user)
+        }
+    }
 
+    suspend fun getUserById(id: Int): UserData {
+        return withContext(Dispatchers.IO) {
+            UserClient.getUserByID(id)
+        }
+    }
+
+    suspend fun updateUser(id: Int, user: UserData): Boolean {
+        return withContext(Dispatchers.IO) {
+            UserClient.updateUser(id, user)
+        }
     }
 }

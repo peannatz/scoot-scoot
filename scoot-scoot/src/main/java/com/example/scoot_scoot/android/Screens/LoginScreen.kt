@@ -34,10 +34,10 @@ import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.ViewModels.LoginCallback
 import com.example.scoot_scoot.android.ViewModels.LoginViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 object LoginScreen {
-
 
     @Composable
     fun LoginScreen(navController: NavController, lvm: LoginViewModel = viewModel()) {
@@ -45,11 +45,13 @@ object LoginScreen {
         val loginCallback = remember {
             object : LoginCallback {
                 override fun onLoginSuccess() {
-                    navController.navigate(Screens.Map)
+                    MainScope().launch{
+                        navController.navigate(Screens.Map)
+                    }
                 }
 
                 override fun onLoginError(errorMessage: String) {
-                    // Handle error navigation
+                    // Handle error
                 }
             }
         }
