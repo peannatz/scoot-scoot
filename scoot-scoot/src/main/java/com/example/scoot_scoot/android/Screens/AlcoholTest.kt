@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.R
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
@@ -50,6 +51,7 @@ object AlcoholTest {
     val secondCardVisible = mutableStateOf(false)
     val thirdCardVisible = mutableStateOf(false)
     val fourthCardVisible = mutableStateOf(false)
+    val introCardVisible = mutableStateOf(false)
     val countdownVisible = mutableStateOf(false)
     val testPassed = mutableStateOf(false)
     val testFailed = mutableStateOf(false)
@@ -57,93 +59,101 @@ object AlcoholTest {
 
     @Composable
     fun AlcoholTest(navController: NavController) {
-        Column(
-            Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        if (UserManager.checkIfUserHasAttempts()){
 
-            AnimatedVisibility(visible = firstCardVisible.value,
-                enter = slideInHorizontally(animationSpec = tween(durationMillis = 40)) { fullWidth ->
-                    fullWidth
-                },
-                exit = slideOutHorizontally(
-                    animationSpec =
-                    tween(durationMillis = 1)
-                ) { fullWidth ->
-                    -fullWidth / 3
-                }) {
-                SwipableCard(
-                    content = "Don't drink and drive", imageId = R.drawable.crash, firstCardVisible,
-                    secondCardVisible
-                )
-            }
+        }else{
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (UserManager.showTutorial()) {
+                    firstCardVisible.value = false
+                    introCardVisible.value = true
+                }
+                AnimatedVisibility(visible = firstCardVisible.value,
+                    enter = slideInHorizontally(animationSpec = tween(durationMillis = 40)) { fullWidth ->
+                        fullWidth
+                    },
+                    exit = slideOutHorizontally(
+                        animationSpec =
+                        tween(durationMillis = 1)
+                    ) { fullWidth ->
+                        -fullWidth / 3
+                    }) {
+                    SwipableCard(
+                        content = "Don't drink and drive", imageId = R.drawable.crash, firstCardVisible,
+                        secondCardVisible
+                    )
+                }
 
-            AnimatedVisibility(
-                visible = secondCardVisible.value,
-                enter = slideInHorizontally(animationSpec = tween(durationMillis = 40)) { fullWidth ->
-                    fullWidth
-                },
-                exit = slideOutHorizontally(
-                    animationSpec =
-                    tween(durationMillis = 1)
-                ) { fullWidth ->
-                    -fullWidth / 3
-                }) {
-                SwipableCard(
-                    content = "After this instruction a countdown starts",
-                    imageId = R.drawable.confused,
-                    secondCardVisible, thirdCardVisible
-                )
-            }
+                AnimatedVisibility(
+                    visible = secondCardVisible.value,
+                    enter = slideInHorizontally(animationSpec = tween(durationMillis = 40)) { fullWidth ->
+                        fullWidth
+                    },
+                    exit = slideOutHorizontally(
+                        animationSpec =
+                        tween(durationMillis = 1)
+                    ) { fullWidth ->
+                        -fullWidth / 3
+                    }) {
+                    SwipableCard(
+                        content = "After this instruction a countdown starts",
+                        imageId = R.drawable.confused,
+                        secondCardVisible, thirdCardVisible
+                    )
+                }
 
-            AnimatedVisibility(
-                visible = thirdCardVisible.value,
-                enter = slideInHorizontally(animationSpec = tween(durationMillis = 40)) { fullWidth ->
-                    fullWidth
-                },
-                exit = slideOutHorizontally(
-                    animationSpec =
-                    tween(durationMillis = 1)
-                ) { fullWidth ->
-                    -fullWidth / 3
-                }) {
-                SwipableCard(
-                    content = "Continue counting in your head \n and tap the screen when the \n counter reaches 0.",
-                    imageId = R.drawable.count, thirdCardVisible, fourthCardVisible
-                )
-            }
+                AnimatedVisibility(
+                    visible = thirdCardVisible.value,
+                    enter = slideInHorizontally(animationSpec = tween(durationMillis = 40)) { fullWidth ->
+                        fullWidth
+                    },
+                    exit = slideOutHorizontally(
+                        animationSpec =
+                        tween(durationMillis = 1)
+                    ) { fullWidth ->
+                        -fullWidth / 3
+                    }) {
+                    SwipableCard(
+                        content = "Continue counting in your head \n and tap the screen when the \n counter reaches 0.",
+                        imageId = R.drawable.count, thirdCardVisible, fourthCardVisible
+                    )
+                }
 
-            AnimatedVisibility(
-                visible = fourthCardVisible.value,
-                enter = slideInHorizontally(animationSpec = tween(durationMillis = 40)) { fullWidth ->
-                    fullWidth
-                },
-                exit = slideOutHorizontally(
-                    animationSpec =
-                    tween(durationMillis = 1)
-                ) { fullWidth ->
-                    -fullWidth / 3
-                }) {
-                SwipableCard(
-                    content = "If you fail 3 times, \nyour account will be blocked for 2 hours",
-                    imageId = R.drawable.sad, fourthCardVisible, countdownVisible
-                )
-            }
-            AnimatedVisibility(visible = countdownVisible.value, enter = fadeIn()) {
-                CountdownCard()
-            }
-            AnimatedVisibility(visible = testFailed.value, enter = fadeIn()) {
-                FailedTest()
-            }
+                AnimatedVisibility(
+                    visible = fourthCardVisible.value,
+                    enter = slideInHorizontally(animationSpec = tween(durationMillis = 40)) { fullWidth ->
+                        fullWidth
+                    },
+                    exit = slideOutHorizontally(
+                        animationSpec =
+                        tween(durationMillis = 1)
+                    ) { fullWidth ->
+                        -fullWidth / 3
+                    }) {
+                    SwipableCard(
+                        content = "If you fail 3 times, \nyour account will be blocked for 2 hours",
+                        imageId = R.drawable.sad, fourthCardVisible, countdownVisible
+                    )
+                }
+                AnimatedVisibility(visible = introCardVisible.value, enter = fadeIn()) {
+                    IntroCard()
+                }
+                AnimatedVisibility(visible = countdownVisible.value, enter = fadeIn()) {
+                    CountdownCard()
+                }
+                AnimatedVisibility(visible = testFailed.value, enter = fadeIn()) {
+                    FailedTest()
+                }
 
-            AnimatedVisibility(visible = testPassed.value, enter = fadeIn()) {
-                PassedTest(navController)
+                AnimatedVisibility(visible = testPassed.value, enter = fadeIn()) {
+                    PassedTest(navController)
+                }
             }
         }
     }
-
-    //TODO fail und win einbauen :)
 
     @Composable
     fun CountdownCard() {
@@ -162,6 +172,26 @@ object AlcoholTest {
                 style = TextStyle(
                     fontSize = 100.sp,
                     color = if (countDown.value < 4) Color.Transparent else MaterialTheme.colors.onBackground
+                )
+            )
+        }
+    }
+
+    @Composable
+    fun IntroCard() {
+        Box(modifier = Modifier
+            .fillMaxSize()
+        ) {
+            Text(
+                text = "Don't drink and drive", Modifier.align(Alignment.Center),
+                style = TextStyle(
+                    fontSize = 60.sp,
+                )
+            )
+            Text(
+                text = "Continue counting down..", Modifier.align(Alignment.Center),
+                style = TextStyle(
+                    fontSize = 60.sp,
                 )
             )
         }
@@ -257,15 +287,23 @@ object AlcoholTest {
     private fun FailedTest() {
         Box(
             Modifier
-                .fillMaxSize()) {
-            Text(
-                text = "Oh no. You missed. \n You're either drunk or just terrible at this. \n You've got 2 more tries.",
-                Modifier.align(Alignment.Center),
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center
+                .fillMaxSize()
+        ) {
+            UserManager.saveWrongAttempt()
+            val wrongAttempts=UserManager.getWrongAttempts()
+            if(wrongAttempts<3){
+                val leftAttempts=3-wrongAttempts
+                Text(
+                    text = "Oh no. You missed. \n You're either drunk or just terrible at this. \n You've got $leftAttempts more tries.",
+                    Modifier.align(Alignment.Center),
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center
+                    )
                 )
-            )
+            }else{
+                //TODO: implement what shows up after to many wrong attempts
+            }
         }
         LaunchedEffect(Unit) {
             restartTest()
@@ -274,13 +312,14 @@ object AlcoholTest {
 
     private suspend fun restartTest() {
         delay(3000)
-        testFailed.value=false
-        countdownVisible.value=true
+        testFailed.value = false
+        countdownVisible.value = true
         countDown.value = 5
     }
 
     private suspend fun navigateBackToMap(navController: NavController) {
         delay(1000)
+        UserManager.dontShowTutorial()
         navController.navigate(Screens.Map)
     }
 

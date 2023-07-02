@@ -3,6 +3,7 @@ package com.example.scoot_scoot.android.ViewModels
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.example.scoot_scoot.android.Data.UserData
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
@@ -64,8 +65,10 @@ class RegisterViewModel : UserDataViewModel() {
         Log.d("confirmPassword", confirmPassword.value)
         Log.d("user", userData.toString())
 
-        if (userRepository.registerUser(userData)) {
-            registerCallback.onRegisterSuccess()
+        val user=userRepository.registerUser(userData)
+
+        if (user!= UserData()) {
+            registerCallback.onRegisterSuccess(user)
         } else {
             registerCallback.onRegisterError("")
         }
@@ -81,6 +84,6 @@ class RegisterViewModel : UserDataViewModel() {
 }
 
 interface RegisterCallback {
-    fun onRegisterSuccess()
+    fun onRegisterSuccess(user:UserData)
     fun onRegisterError(errorMessage: String)
 }

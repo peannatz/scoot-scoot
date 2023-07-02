@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.scoot_scoot.android.Data.UserData
 import com.example.scoot_scoot.android.Repository.UserRepository
 import kotlinx.coroutines.launch
 
@@ -22,7 +23,8 @@ class LoginViewModel : ViewModel() {
             val loggedIn = userRepository.checkLogin(email.value, password.value)
             if (loggedIn) {
                 loginErrorMsg.value = ""
-                loginCallback.onLoginSuccess()
+                val user=userRepository.getUserByEmail(email.value)
+                loginCallback.onLoginSuccess(user)
             } else {
                 userNotFound()
             }
@@ -38,6 +40,6 @@ class LoginViewModel : ViewModel() {
 
 
 interface LoginCallback {
-    fun onLoginSuccess()
+    fun onLoginSuccess(user: UserData)
     fun onLoginError(errorMessage: String)
 }

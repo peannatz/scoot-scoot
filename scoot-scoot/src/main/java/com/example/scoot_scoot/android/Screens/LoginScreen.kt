@@ -30,7 +30,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.scoot_scoot.android.Data.UserData
+import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.R
+import com.example.scoot_scoot.android.Repository.UserRepository
 import com.example.scoot_scoot.android.ViewModels.LoginCallback
 import com.example.scoot_scoot.android.ViewModels.LoginViewModel
 import kotlinx.coroutines.Dispatchers
@@ -44,8 +47,9 @@ object LoginScreen {
 
         val loginCallback = remember {
             object : LoginCallback {
-                override fun onLoginSuccess() {
+                override fun onLoginSuccess(user: UserData) {
                     MainScope().launch{
+                        UserManager.saveUser(user)
                         navController.navigate(Screens.Map)
                     }
                 }
@@ -55,6 +59,8 @@ object LoginScreen {
                 }
             }
         }
+
+        //TODO: filter whitespace in register and login form
 
         Box(modifier = Modifier.fillMaxSize()) {
             ClickableText(
