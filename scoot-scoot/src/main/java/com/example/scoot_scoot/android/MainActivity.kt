@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.scoot_scoot.android.Screens.AlcoholTest.AlcoholTest
 import com.example.scoot_scoot.android.Screens.Dashboard.Dashboard
 import com.example.scoot_scoot.android.Screens.LoginScreen.LoginScreen
 import com.example.scoot_scoot.android.Screens.MapScreen.MapScreen
@@ -50,6 +51,7 @@ fun Navigation() {
         composable(Screens.Register) { RegisterScreen(navController) }
         composable(Screens.Login) { LoginScreen(navController) }
         composable(Screens.Profile) { ProfileScreen(navController) }
+        composable(Screens.AlcTest) { AlcoholTest(navController) }
     }
 
 }

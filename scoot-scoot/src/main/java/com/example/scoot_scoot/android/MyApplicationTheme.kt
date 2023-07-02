@@ -21,22 +21,23 @@ fun MyApplicationTheme(
     content: @Composable () -> Unit
 ) {
     val colors = if (darkTheme) {
+
         darkColors(
-            background = Color(0xFF173130),
-            primary = Color(0xff0b6966),
-            primaryVariant = Color(0xff0c4d49),
-            secondary = Color(0xFFa40043),
-            onPrimary = Color(0xFF81CBCE),
+            background = Color(0xFF002830),
+            primary = Color(0xFF127585),
+            primaryVariant = Color(0xFFD1BCFF),
+            secondary = Color(0xFF54DBC8),
+            onPrimary = Color(0xFF003238),
             onSecondary = Color(0xFFE1F2F3)
         )
     } else {
         lightColors(
-            background = Color(0xFFE1F2F3),
-            primary = Color(0xFF81CBCE),
-            primaryVariant = Color(0xFF0B6966),
-            secondary = Color(0xFFE4A5D8),
-            onPrimary = Color(0xFF0C4D49),
-            onSecondary = Color(0xFF05504B)
+            background = Color(0xFF6DCBF1),
+            primary = Color(0xFF259BAA),
+            primaryVariant = Color(0xFF684FA3),
+            secondary = Color(0xFF006B60),
+            onPrimary = Color(0xFF9CF4FF),
+            onSecondary = Color(0xFFFFFFFF)
         )
     }
     val typography = Typography(

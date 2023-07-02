@@ -88,7 +88,7 @@ object MapScreen {
             MockMapFunctionality(
                 onMapClick = { toggleBottomSheet() },
                 onButtonClick = { toggleBottomSheet() })
-            RenderMapUi()
+            RenderMapUi(navController)
             PrepareBottomSheet(bottomSheetContent)
 
         } else {
@@ -173,7 +173,7 @@ object MapScreen {
     }
 
     @Composable
-    fun RenderMapUi() {
+    fun RenderMapUi(navController: NavController) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -181,7 +181,7 @@ object MapScreen {
         ) {
             FloatingActionButton(
                 onClick = {
-                    //OnClick Method
+                    navController.navigate(Screens.Profile)
                 },
                 shape = RoundedCornerShape(50),
                 backgroundColor = MaterialTheme.colors.primary,

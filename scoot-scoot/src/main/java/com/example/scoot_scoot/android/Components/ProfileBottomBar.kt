@@ -44,6 +44,15 @@ object ProfileBottomBar {
             )
             BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
                 Icon(
+                    painter = painterResource(id = R.drawable.baseline_map_24),
+                    contentDescription = "",
+                    modifier = Modifier.size(40.dp)
+                )
+            },
+                label = { Text(text = "Trips") }
+            )
+            BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+                Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "",
                     modifier = Modifier.size(40.dp)
