@@ -1,5 +1,7 @@
 package com.example.backend.Service;
 
+import com.example.backend.DTO.ScooterDto;
+import com.example.backend.DTO.TierTypeDto;
 import com.example.backend.Entity.Scooter;
 import com.example.backend.Repository.ScooterRepository;
 import org.springframework.stereotype.Service;
@@ -26,5 +28,11 @@ public class ScooterService {
             }
         }
         return scooterBatteryList;
+    }
+
+    public ScooterDto getById(long id){
+        Scooter scooter = scooterRepository.findById(id).orElseThrow();
+        TierTypeDto tierTypeDto = new TierTypeDto(scooter.getTier(), scooter.getTier().getMinutePrice(), scooter.getTier().getKilometrePrice());
+        return new ScooterDto(scooter.getId(),scooter.getName(), scooter.getBattery(), scooter.isAvailable(), scooter.getLocation(), tierTypeDto);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.backend.Entity;
 
+import com.example.backend.Enum.TierType;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,9 +14,10 @@ public class Scooter {
     private String name;
     private int battery;
     private boolean available;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    @Embedded
     private Location location;
+
+    private TierType tier;
 
     public long getId() {
         return id;
@@ -55,5 +57,13 @@ public class Scooter {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public TierType getTier() {
+        return tier;
+    }
+
+    public void setTier(TierType tier) {
+        this.tier = tier;
     }
 }

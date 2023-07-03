@@ -24,9 +24,9 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addUser(@RequestBody User user){
+    public User addUser(@RequestBody User user){
         userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User created");
+        return user;
     }
 
     @GetMapping("/getbyId/{id}")

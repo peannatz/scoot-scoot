@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.scoot_scoot.android.Data.UserData
+import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.ViewModels.RegisterCallback
 import com.example.scoot_scoot.android.ViewModels.RegisterViewModel
@@ -50,8 +52,9 @@ object RegisterScreen {
 
         val registerCallback = remember {
             object : RegisterCallback {
-                override fun onRegisterSuccess() {
+                override fun onRegisterSuccess(user: UserData) {
                     MainScope().launch {
+                        UserManager.saveUser(user)
                         navController.navigate(Screens.Map)
                     }
                 }
@@ -112,7 +115,6 @@ object RegisterScreen {
             }
             Button(onClick = {
                 rvm.viewModelScope.launch(Dispatchers.IO) {
-                    //Callback
                     rvm.register(registerCallback)
                 }
             }, enabled = rvm.isEnabledRegisterButton.value) {

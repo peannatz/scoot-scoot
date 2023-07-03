@@ -2,48 +2,25 @@ package com.example.backend.Entity;
 
 import jakarta.persistence.*;
 
-@Entity
-@Table(name = "locations")
+@Embeddable
 public class Location {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    int id;
+    float longitude;
+    float latitude;
 
-    float x;
-    float y;
-    @OneToOne(mappedBy = "location")
-    Scooter scooter;
-
-    public int getId() {
-        return id;
+    public float getLongitude() {
+        return longitude;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
     }
 
-    public float getX() {
-        return x;
+    public float getLatitude() {
+        return latitude;
     }
 
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public Scooter getScooter() {
-        return scooter;
-    }
-
-    public void setScooter(Scooter scooter) {
-        this.scooter = scooter;
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
     }
 }

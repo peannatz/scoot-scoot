@@ -1,15 +1,16 @@
 package com.example.backend.Controller;
 
 
+import com.example.backend.DTO.ScooterDto;
+import com.example.backend.DTO.TierTypeDto;
 import com.example.backend.Entity.Scooter;
+import com.example.backend.Enum.TierType;
 import com.example.backend.Repository.ScooterRepository;
 import com.example.backend.Service.ScooterService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 @RestController()
 @RequestMapping("/scooter")
@@ -25,19 +26,19 @@ public class ScootController {
     }
 
     @PostMapping("/addScooter")
-    public ResponseEntity<String> addScooter(@RequestBody Scooter scooter){
+    public Scooter addScooter(@RequestBody Scooter scooter){
         scooterRepository.save(scooter);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Scooter created");
+        return scooter;
 
     }
 
-    @GetMapping("/getScooter/{id}")
-    public Optional<Scooter> getScooter(@PathVariable int id){
-        return scooterRepository.findById(id);
+    @GetMapping("/getbyId/{id}")
+    public ScooterDto getById(@PathVariable long id){
+        return scooterService.getById(id);
     }
 
-    @PostMapping("/getAllScooters")
+    @GetMapping("/getAllScooters")
     public List<Scooter> getAllScooters(){
         return scooterRepository.findAll();
     }
@@ -51,4 +52,12 @@ public class ScootController {
     public List<Scooter> getScootersByBattery(@PathVariable int battery){
         return scooterService.getScootersByBattery(battery);
     }
+
+    @GetMapping("/getPrices")
+    public List<TierTypeDto> getPrices(){
+        return Stream.of(TierType.values())
+                .map(tierType -> new TierTypeDto(tierType, tierType.getMinutePrice(), tierType.getKilometrePrice()))
+                .toList();
+    }
+
 }

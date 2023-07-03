@@ -14,7 +14,7 @@ class UserRepository {
         }
     }
 
-    suspend fun registerUser(user: UserData): Boolean {
+    suspend fun registerUser(user: UserData): UserData {
         return withContext(Dispatchers.IO) {
             UserClient.addUser(user)
         }
@@ -23,6 +23,12 @@ class UserRepository {
     suspend fun getUserById(id: Int): UserData {
         return withContext(Dispatchers.IO) {
             UserClient.getUserByID(id)
+        }
+    }
+
+    suspend fun getUserByEmail(email: String): UserData {
+        return withContext(Dispatchers.IO) {
+            UserClient.getUserByEmail(email) as UserData
         }
     }
 
