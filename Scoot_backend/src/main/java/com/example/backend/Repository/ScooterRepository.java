@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ScooterRepository extends CrudRepository<Scooter, Long> {
 
-    Optional<Scooter> findById(int id);
+    Optional<Scooter> findById(long id);
 
     List<Scooter> findAll();
 

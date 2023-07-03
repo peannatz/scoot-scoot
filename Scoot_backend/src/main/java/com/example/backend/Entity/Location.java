@@ -12,7 +12,7 @@ public class Location {
 
     float x;
     float y;
-    @OneToOne(mappedBy = "location", optional = true)
+    @OneToOne(mappedBy = "location")
     Scooter scooter;
 
     public int getId() {
