@@ -35,11 +35,7 @@ public class ScootController {
 
     @GetMapping("/getbyId/{id}")
     public ScooterDto getById(@PathVariable long id){
-
-        Scooter scooter = scooterRepository.findById(id).orElseThrow();
-        TierTypeDto tierTypeDto = new TierTypeDto(scooter.getTier(), scooter.getTier().getMinutePrice(), scooter.getTier().getKilometrePrice());
-        return new ScooterDto(scooter.getId(),scooter.getName(), scooter.getBattery(), scooter.isAvailable(), scooter.getLocation(), tierTypeDto);
-
+        return scooterService.getById(id);
     }
 
     @GetMapping("/getAllScooters")
