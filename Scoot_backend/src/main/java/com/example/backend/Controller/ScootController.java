@@ -35,7 +35,7 @@ public class ScootController {
         return scooterRepository.findById(id);
     }
 
-    @PostMapping("/getAllScooters")
+    @GetMapping("/getAllScooters")
     public List<Scooter> getAllScooters(){
         return scooterRepository.findAll();
     }
