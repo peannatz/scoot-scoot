@@ -1,5 +1,6 @@
 package com.example.backend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +17,10 @@ public class Scooter {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tier_id")
+    private Tier tier;
 
     public long getId() {
         return id;
@@ -55,5 +60,13 @@ public class Scooter {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public Tier getTier() {
+        return tier;
+    }
+
+    public void setTier(Tier tier) {
+        this.tier = tier;
     }
 }

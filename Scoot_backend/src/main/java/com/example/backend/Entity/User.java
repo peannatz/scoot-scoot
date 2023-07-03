@@ -2,7 +2,7 @@ package com.example.backend.Entity;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -18,6 +18,9 @@ public class User {
     private String email;
     private String password;
     private String birthdate;
+
+    @OneToMany(mappedBy = "user")
+    List<Ride> rides;
 
     public long getId() {
         return id;
@@ -65,5 +68,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Ride> getRides() {
+        return rides;
+    }
+
+    public void setRides(List<Ride> rides) {
+        this.rides = rides;
     }
 }

@@ -4,8 +4,6 @@ package com.example.backend.Controller;
 import com.example.backend.Entity.Scooter;
 import com.example.backend.Repository.ScooterRepository;
 import com.example.backend.Service.ScooterService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +30,8 @@ public class ScootController {
 
     }
 
-    @GetMapping("/getScooter/{id}")
-    public Optional<Scooter> getScooter(@PathVariable int id){
+    @GetMapping("/getbyId/{id}")
+    public Optional<Scooter> getById(@PathVariable int id){
         return scooterRepository.findById(id);
     }
 
