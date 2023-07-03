@@ -18,6 +18,7 @@ public class User {
     private String email;
     private String password;
     private String birthdate;
+    private int credit;
 
     @OneToMany(mappedBy = "user")
     List<Ride> rides;
@@ -76,5 +77,13 @@ public class User {
 
     public void setRides(List<Ride> rides) {
         this.rides = rides;
+    }
+
+    public int getCredit() {
+        return credit;
+    }
+
+    public void setCredit(int credit) {
+        this.credit = credit;
     }
 }
