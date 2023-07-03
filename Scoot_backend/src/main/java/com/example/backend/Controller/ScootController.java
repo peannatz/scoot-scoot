@@ -31,7 +31,7 @@ public class ScootController {
     }
 
     @GetMapping("/getbyId/{id}")
-    public Optional<Scooter> getById(@PathVariable int id){
+    public Optional<Scooter> getById(@PathVariable long id){
         return scooterRepository.findById(id);
     }
 

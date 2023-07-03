@@ -1,7 +1,12 @@
 package com.example.backend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 @Entity
 @Table(name = "locations")
 public class Location {
@@ -12,8 +17,6 @@ public class Location {
 
     float x;
     float y;
-    @OneToOne(mappedBy = "location")
-    Scooter scooter;
 
     public int getId() {
         return id;
@@ -39,11 +42,4 @@ public class Location {
         this.y = y;
     }
 
-    public Scooter getScooter() {
-        return scooter;
-    }
-
-    public void setScooter(Scooter scooter) {
-        this.scooter = scooter;
-    }
 }
