@@ -1,13 +1,16 @@
 package com.example.backend.Controller;
 
 
+import com.example.backend.DTO.ScooterDto;
+import com.example.backend.DTO.TierTypeDto;
 import com.example.backend.Entity.Scooter;
+import com.example.backend.Enum.TierType;
 import com.example.backend.Repository.ScooterRepository;
 import com.example.backend.Service.ScooterService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 @RestController()
 @RequestMapping("/scooter")
@@ -31,8 +34,12 @@ public class ScootController {
     }
 
     @GetMapping("/getbyId/{id}")
-    public Optional<Scooter> getById(@PathVariable long id){
-        return scooterRepository.findById(id);
+    public ScooterDto getById(@PathVariable long id){
+
+        Scooter scooter = scooterRepository.findById(id).orElseThrow();
+        TierTypeDto tierTypeDto = new TierTypeDto(scooter.getTier(), scooter.getTier().getMinutePrice(), scooter.getTier().getKilometrePrice());
+        return new ScooterDto(scooter.getId(),scooter.getName(), scooter.getBattery(), scooter.isAvailable(), scooter.getLocation(), tierTypeDto);
+
     }
 
     @GetMapping("/getAllScooters")
@@ -49,4 +56,12 @@ public class ScootController {
     public List<Scooter> getScootersByBattery(@PathVariable int battery){
         return scooterService.getScootersByBattery(battery);
     }
+
+    @GetMapping("/getPrices")
+    public List<TierTypeDto> getPrices(){
+        return Stream.of(TierType.values())
+                .map(tierType -> new TierTypeDto(tierType, tierType.getMinutePrice(), tierType.getKilometrePrice()))
+                .toList();
+    }
+
 }

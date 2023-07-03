@@ -1,12 +1,8 @@
 package com.example.backend.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.example.backend.Enum.TierType;
 import jakarta.persistence.*;
 
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
 @Entity
 @Table(name = "scooters")
 public class Scooter {
@@ -21,9 +17,7 @@ public class Scooter {
     @Embedded
     private Location location;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "tier_id")
-    private Tier tier;
+    private TierType tier;
 
     public long getId() {
         return id;
@@ -65,11 +59,11 @@ public class Scooter {
         this.location = location;
     }
 
-    public Tier getTier() {
+    public TierType getTier() {
         return tier;
     }
 
-    public void setTier(Tier tier) {
+    public void setTier(TierType tier) {
         this.tier = tier;
     }
 }
