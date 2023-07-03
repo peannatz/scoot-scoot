@@ -3,6 +3,8 @@ package com.example.scoot_scoot.android.ViewModels
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.scoot_scoot.android.Data.HelpData
@@ -22,6 +24,7 @@ class MapViewModel:ViewModel() {
     private val scooterRepository=ScooterRepository()
 
     var selectedScooter= ScooterModel(-1, "", 1, false, Location(0,0f,0f))
+    var selectedScooter1: MutableState<ScooterModel?> = mutableStateOf(null)
 
     fun UpdateSelectedScooter(scooter: ScooterModel){
         selectedScooter=scooter; }
@@ -30,7 +33,6 @@ class MapViewModel:ViewModel() {
     var sheetState = ModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden,
         confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded })
 
-    var updateScooterInfo=false;
 
     private val itemsList = MutableStateFlow(listOf<ScooterModel>())
     val items: StateFlow<List<ScooterModel>> get() = itemsList
