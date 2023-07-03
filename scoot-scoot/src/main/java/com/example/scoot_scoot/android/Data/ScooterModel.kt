@@ -7,4 +7,5 @@ data class ScooterModel(
     val battery: Int,
     val available: Boolean,
     val location: Location,
+    val tier: String,
 )

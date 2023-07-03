@@ -27,12 +27,15 @@ import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -58,6 +61,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
+import kotlinx.coroutines.launch
 
 object MapScreen {
 
@@ -81,11 +85,6 @@ object MapScreen {
         }
         mvm.fusedLocationClient = fusedLocationClient
 
-        val modalSheetState = mvm.sheetState
-        var bottomSheetContent: (@Composable () -> Unit)? by remember {
-            mutableStateOf(null)
-        }
-
         val mapProperties by remember { mutableStateOf(MapProperties(isMyLocationEnabled = true)) }
         val uiSettings by remember {
             mutableStateOf(
@@ -100,9 +99,7 @@ object MapScreen {
             }
         }
 
-        mvm.selectedScooter1.value?.let { marker ->
-            MarkerInfoBottomSheet({ mvm.selectedScooter1.value = null }, mvm)
-        }
+        var coroutineScope = rememberCoroutineScope()
 
         LaunchedEffect(cameraState.isMoving) {
             if (cameraState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
@@ -116,7 +113,6 @@ object MapScreen {
             cameraPositionState = cameraState,
             properties = mapProperties,
             onMapLoaded = {
-                //isFiringCoroutine.value = true
                 mvm.useLocation.value = true
                 updateLocation(fusedLocationClient, cameraState)
             },
@@ -124,18 +120,31 @@ object MapScreen {
             contentPadding = PaddingValues(top = 120.dp, end = 10.dp),
         )
         {
-            scooters.forEach { item ->
-                val position = LatLng(item.location.x.toDouble(), item.location.y.toDouble())
+            val scooter1 = mvm.scooters.collectAsState().value
+            scooter1.forEach { item ->
+                val position =
+                    LatLng(item.location.latitude.toDouble(), item.location.longitude.toDouble())
                 Marker(
                     state = rememberMarkerState(position = position),
                     title = item.name,
                     icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
-                    onClick = test()
+                    onClick = selectScooter(mvm,item)
                 )
 
             }
         }
         RenderMapUi(navController, mvm, fusedLocationClient, cameraState)
+
+        mvm.selectedScooter.value?.let { marker ->
+            MarkerInfoBottomSheet({ mvm.selectedScooter.value = null }, mvm)
+            coroutineScope.launch { mvm.sheetState.show() }
+        }
+
+    }
+
+    private fun selectScooter(mvm: MapViewModel, scooterModel: ScooterModel): (Marker) -> Boolean = { marker ->
+        mvm.selectedScooter.value = scooterModel
+        true
     }
 
     @SuppressLint("MissingPermission")
@@ -148,7 +157,7 @@ object MapScreen {
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 val cameraPosition = CameraPosition.Builder()
                     .target(currentLatLng)
-                    .zoom(15f)
+                    .zoom(17f)
                     .build()
 
                 // Set the initial camera position
@@ -163,6 +172,8 @@ object MapScreen {
         val modalSheetState = mvm.sheetState
         ModalBottomSheetLayout(
             sheetState = modalSheetState,
+            scrimColor = Color.Unspecified,
+            sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
             sheetContent = {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -170,7 +181,7 @@ object MapScreen {
                         .padding(horizontal = 40.dp, vertical = 20.dp)
                         .fillMaxWidth()
                 ) {
-                    Text(text = mvm.selectedScooter.name, fontSize = 30.sp)
+                    Text(text = mvm.selectedScooter.value!!.name, fontSize = 30.sp)
                     Row(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         modifier = Modifier
@@ -186,7 +197,7 @@ object MapScreen {
                     ) {
                         Text(
                             //text = model.selectedScooter.priceMin.setScale(2, RoundingMode.HALF_EVEN)
-                            text = "0.5"
+                            text = mvm.selectedScooter.value!!.tier
                                 .toString(),
                             fontSize = 15.sp
                         )
@@ -197,7 +208,7 @@ object MapScreen {
                             fontSize = 15.sp
                         )
                     }
-                    val name = "s" + mvm.selectedScooter.id.toString()
+                    val name = "s" + mvm.selectedScooter.value!!.id.toString()
                     val context = LocalContext.current
                     val drawableId1 = R.drawable.s0
                     val drawableId = remember(name) {
@@ -221,7 +232,6 @@ object MapScreen {
                 }
             }
         ) {
-            // Your app content
         }
     }
 
@@ -292,18 +302,19 @@ object MapScreen {
         }
     }
 
-    val scooters: List<ScooterModel> = listOf(
+    val scooterSampleData: List<ScooterModel> = listOf(
         ScooterModel(
             id = 1,
             name = "Scooter McScootface",
             battery = 75,
             available = true,
-            location =
-            Location(
+            location = Location(
                 id = 1,
-                x = 53.5511f,
-                y = 9.9937f
-            )
+                latitude = 53.5511f,
+                longitude = 9.9937f
+            ),
+            "BASIC"
+
         ),
         ScooterModel(
             id = 2,
@@ -313,9 +324,10 @@ object MapScreen {
             location =
             Location(
                 id = 2,
-                x = 53.5532f,
-                y = 9.9986f
-            )
+                latitude = 53.5532f,
+                longitude = 9.9986f
+            ),
+            "BASIC"
         ),
 
         ScooterModel(
@@ -326,16 +338,10 @@ object MapScreen {
             location =
             Location(
                 id = 3,
-                x = 53.5503f,
-                y = 10.0006f
-            )
+                latitude = 53.5503f,
+                longitude = 10.0006f
+            ),
+            "PREMIUM"
         )
     )
-
-    private fun test(): (Marker) -> Boolean {
-        println("CLICK")
-        return {
-            true
-        }
-    }
 }

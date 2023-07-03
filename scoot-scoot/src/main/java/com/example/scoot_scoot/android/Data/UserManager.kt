@@ -35,7 +35,7 @@ object UserManager {
         return sharedPreferences.getBoolean(KEY_LOCATION_PERMISSIONS, false)
     }
 
-    fun saveUser(userId: String, userName: String) {
+    fun saveUser(user: UserData) {
         sharedPreferences.edit {
             putString(KEY_USER_ID, user.id.toString())
             apply()

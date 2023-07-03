@@ -24,7 +24,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class MainActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         UserManager.init(this)
@@ -42,11 +41,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screens.Map) {
+    NavHost(navController = navController, startDestination = Screens.Permissions) {
         composable(Screens.Splash) {
             SplashScreen(navController)
         }
