@@ -18,9 +18,17 @@ public class Ride {
     @ManyToOne(cascade = CascadeType.ALL)
     User user;
 
-    @ManyToOne
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="longitude", column = @Column(name = "startlongitude")),
+            @AttributeOverride(name="latitude", column = @Column(name = "startlatitude"))
+    })
     Location startLocation;
-    @ManyToOne
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="longitude", column = @Column(name = "endlongitude")),
+            @AttributeOverride(name="latitude", column = @Column(name = "endlatitude"))
+    })
     Location endLocation;
 
     public int getId() {

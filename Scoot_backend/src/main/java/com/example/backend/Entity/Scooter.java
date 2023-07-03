@@ -18,8 +18,7 @@ public class Scooter {
     private String name;
     private int battery;
     private boolean available;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    @Embedded
     private Location location;
 
     @ManyToOne(cascade = CascadeType.ALL)

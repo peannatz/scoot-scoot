@@ -1,45 +1,26 @@
 package com.example.backend.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
-@Entity
-@Table(name = "locations")
+@Embeddable
 public class Location {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    int id;
+    float longitude;
+    float latitude;
 
-    float x;
-    float y;
-
-    public int getId() {
-        return id;
+    public float getLongitude() {
+        return longitude;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
     }
 
-    public float getX() {
-        return x;
+    public float getLatitude() {
+        return latitude;
     }
 
-    public void setX(float x) {
-        this.x = x;
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
     }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
 }
