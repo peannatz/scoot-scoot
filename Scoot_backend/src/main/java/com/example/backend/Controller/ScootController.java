@@ -9,7 +9,9 @@ import com.example.backend.Repository.ScooterRepository;
 import com.example.backend.Service.ScooterService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController()
@@ -35,22 +37,25 @@ public class ScootController {
 
     @GetMapping("/getbyId/{id}")
     public ScooterDto getById(@PathVariable long id){
-        return scooterService.getById(id);
+        return scooterService.getWithTierType(id);
     }
 
     @GetMapping("/getAllScooters")
-    public List<Scooter> getAllScooters(){
-        return scooterRepository.findAll();
+    public List<ScooterDto> getAllScooters(){
+        List<Scooter> scooterList = scooterRepository.findAll();
+        return scooterList.stream().map(scooter -> scooterService.getWithTierType(scooter.getId())).collect(Collectors.toList());
     }
 
-    @PostMapping("/getAllAvailableScooters/{available}")
-    public List<Scooter> getAllAvailableScooters(@PathVariable boolean available){
-        return scooterRepository.findByAvailable(available);
+    @GetMapping("/getAllAvailableScooters/{available}")
+    public List<ScooterDto> getAllAvailableScooters(@PathVariable boolean available){
+        List<Scooter> scooterList = scooterRepository.findByAvailable(available);
+        return scooterList.stream().map(scooter -> scooterService.getWithTierType(scooter.getId())).collect(Collectors.toList());
     }
 
     @GetMapping("/getByBattery/{battery}")
-    public List<Scooter> getScootersByBattery(@PathVariable int battery){
-        return scooterService.getScootersByBattery(battery);
+    public List<ScooterDto> getScootersByBattery(@PathVariable int battery){
+        List<Scooter> scooterList = scooterService.getScootersByBattery(battery);
+        return scooterList.stream().map(scooter -> scooterService.getWithTierType(scooter.getId())).collect(Collectors.toList());
     }
 
     @GetMapping("/getPrices")
