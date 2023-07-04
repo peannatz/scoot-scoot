@@ -71,7 +71,7 @@ object UserManager {
     fun clearWrongAttempts() {
         sharedPreferences.edit {
             putLong(KEY_FIRST_ATTEMPT_TIMESTAMP, 0)
-            putLong(KEY_WRONG_ATTEMPTS, 0)
+            putInt(KEY_WRONG_ATTEMPTS, 0)
             apply()
         }
     }
