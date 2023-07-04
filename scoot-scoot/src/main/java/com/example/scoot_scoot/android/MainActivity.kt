@@ -20,7 +20,6 @@ import com.example.scoot_scoot.android.Screens.ProfileScreen.ProfileScreen
 import com.example.scoot_scoot.android.Screens.RegisterScreen.RegisterScreen
 import com.example.scoot_scoot.android.Screens.Screens
 import com.example.scoot_scoot.android.Screens.SplashScreen.SplashScreen
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class MainActivity : ComponentActivity() {
 
