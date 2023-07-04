@@ -1,5 +1,8 @@
 package com.example.scoot_scoot.android.Network
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.os.Build
 import okhttp3.OkHttpClient
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -22,8 +25,15 @@ abstract class NetworkClient {
     protected val deviceUrl = "http://192.168.2.171:8080/"
     protected val usbUrl = "http://127.0.0.1:8080/"
     protected val emulatorUrl = "http://10.0.2.2:8080/"
-    protected val baseUrl = emulatorUrl
+    protected val baseUrl = chooseUrl()
 
+    private fun chooseUrl():String {
+        if (Build.PRODUCT.contains("sdk") || Build.MODEL.contains("emu")) {
+            return emulatorUrl
+        }else{
+            return deviceUrl
+        }
+    }
     protected fun postRequest(url: String, body: String): Boolean {
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = RequestBody.create(mediaType, body)

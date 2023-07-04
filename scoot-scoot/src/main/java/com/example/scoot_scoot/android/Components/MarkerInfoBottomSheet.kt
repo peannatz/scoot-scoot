@@ -14,6 +14,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -44,9 +46,12 @@ import java.util.concurrent.TimeUnit
 
 object MarkerInfoBottomSheet {
 
+    val priceMin = 2
+    val priceKm = 5
+
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun MarkerInfoBottomSheet(onClose: () -> Unit, mvm: MapViewModel) {
+    fun MarkerInfoBottomSheet( mvm: MapViewModel) {
         val modalSheetState = mvm.infoSheetState
 
         ModalBottomSheetLayout(
@@ -60,11 +65,26 @@ object MarkerInfoBottomSheet {
     }
 
     @Composable
+    fun RideInfo(mvm: MapViewModel) {
+        if (mvm.kmMode){
+            RidingInfoKmMode(mvm = mvm)
+        }else{
+            RidingInfoMinuteMode(mvm = mvm)
+        }
+    }
+
+
+    @Composable
+    fun RidingInfoKmMode(mvm: MapViewModel) {
+        Text(text = "TEST")
+    }
+
+    @Composable
     fun RidingInfoMinuteMode(mvm: MapViewModel) {
 
-        LaunchedEffect(Unit){
-            while (mvm.riding){
-                delay(30000)
+        LaunchedEffect(Unit) {
+            while (mvm.riding) {
+                delay(1000)
                 mvm.GetPassedTime()
             }
         }
@@ -75,6 +95,9 @@ object MarkerInfoBottomSheet {
                 .padding(horizontal = 40.dp, vertical = 20.dp)
                 .fillMaxWidth()
         ) {
+
+            //Infos zur Fahrt: Startzeit und Dauer
+
             Text(text = mvm.selectedScooter.value!!.name, fontSize = 30.sp)
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -98,14 +121,28 @@ object MarkerInfoBottomSheet {
                     fontSize = 15.sp,
                 )
                 Text(
-                    text = mvm.passedTime,
+                    text = mvm.passedTimeString,
                     fontSize = 15.sp,
                 )
             }
-            //TODO: Price!!
-            //Text(text = )
 
+            //Fahrtpreis
+            Text(
+                text = convertToCurrencyString(mvm),
+                style = TextStyle(fontSize = 30.sp),
+                modifier = Modifier.padding(20.dp)
+            )
+
+            Button(onClick = { /*TODO*/ }) {
+                Text(text = "Stop scooting pls")
+            }
         }
+    }
+
+    fun convertToCurrencyString(mvm: MapViewModel): String {
+        val euros = mvm.passedTimeInMinutes * priceMin / 100.0
+        val formattedString = String.format("%.2f", euros)
+        return "$formattedString€"
     }
 
 
@@ -136,11 +173,11 @@ object MarkerInfoBottomSheet {
             ) {
                 Text(
                     text = "minute price",
-                    style = if (!pricePerKm) glowingTextStyle else regularTextStyle
+                    style = if (!mvm.kmMode) glowingTextStyle else regularTextStyle
                 )
                 Text(
                     text = "km price",
-                    style = if (pricePerKm) glowingTextStyle else regularTextStyle
+                    style = if (mvm.kmMode) glowingTextStyle else regularTextStyle
                 )
             }
             Row(
@@ -148,18 +185,14 @@ object MarkerInfoBottomSheet {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    //text = model.selectedScooter.priceMin.setScale(2, RoundingMode.HALF_EVEN)
-                    text = mvm.selectedScooter.value!!.tier
-                        .toString(),
+                    text = "$priceMin ct",
                     fontSize = 15.sp,
-                    style = if (!pricePerKm) glowingTextStyle else regularTextStyle
+                    style = if (!mvm.kmMode) glowingTextStyle else regularTextStyle
                 )
                 Text(
-                    //text = model.selectedScooter.priceKm.setScale(2, RoundingMode.HALF_EVEN)
-                    text = "0.2"
-                        .toString(),
+                    text = "$priceKm ct",
                     fontSize = 15.sp,
-                    style = if (pricePerKm) glowingTextStyle else regularTextStyle
+                    style = if (mvm.kmMode) glowingTextStyle else regularTextStyle
                 )
             }
 
@@ -199,10 +232,10 @@ object MarkerInfoBottomSheet {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(text = "Current Mode:")
-                    Text(text = if (pricePerKm) "km" else "minute")
+                    Text(text = if (mvm.kmMode) "km" else "minute")
                     Switch(
-                        checked = pricePerKm,
-                        onCheckedChange = { _value -> pricePerKm = _value })
+                        checked = mvm.kmMode,
+                        onCheckedChange = { _value -> mvm.kmMode = _value })
                 }
             }
         }

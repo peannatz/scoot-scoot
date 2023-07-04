@@ -20,6 +20,7 @@ import com.example.scoot_scoot.android.Components.MapUi.MapUi
 import com.example.scoot_scoot.android.Components.MarkerInfoBottomSheet.MarkerInfoBottomSheet
 import com.example.scoot_scoot.android.Data.Location
 import com.example.scoot_scoot.android.Data.ScooterModel
+import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.ViewModels.MapViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -73,7 +74,7 @@ object MapScreen {
             }
         }
 
-        var coroutineScope = rememberCoroutineScope()
+        val coroutineScope = rememberCoroutineScope()
 
         LaunchedEffect(cameraState.isMoving) {
             if (cameraState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
@@ -81,6 +82,9 @@ object MapScreen {
             }
         }
 
+        LaunchedEffect(mvm.selectedScooter.value) {
+            coroutineScope.launch { mvm.infoSheetState.show() }
+        }
 
         GoogleMap(
             modifier = Modifier.fillMaxHeight(),
@@ -89,6 +93,9 @@ object MapScreen {
             onMapLoaded = {
                 mvm.useLocation.value = true
                 updateLocation(fusedLocationClient, cameraState)
+            },
+            onMapClick = {
+                coroutineScope.launch { mvm.infoSheetState.hide() }
             },
             uiSettings = uiSettings,
             contentPadding = PaddingValues(top = 120.dp, end = 10.dp),
@@ -102,7 +109,7 @@ object MapScreen {
                     state = rememberMarkerState(position = position),
                     title = item.name,
                     icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
-                    onClick = selectScooter(mvm,item)
+                    onClick = selectScooter(mvm, item)
                 )
 
             }
@@ -110,17 +117,17 @@ object MapScreen {
         MapUi(navController, mvm, fusedLocationClient, cameraState)
 
         mvm.selectedScooter.value?.let { marker ->
-            MarkerInfoBottomSheet({ mvm.selectedScooter.value = null }, mvm)
-            coroutineScope.launch { mvm.infoSheetState.show() }
+            MarkerInfoBottomSheet(mvm)
         }
 
         //CurrenRideBottomSheet(mvm)
     }
 
-    private fun selectScooter(mvm: MapViewModel, scooterModel: ScooterModel): (Marker) -> Boolean = { marker ->
-        mvm.selectedScooter.value = scooterModel
-        true
-    }
+    private fun selectScooter(mvm: MapViewModel, scooterModel: ScooterModel): (Marker) -> Boolean =
+        { marker ->
+            mvm.selectedScooter.value = scooterModel
+            true
+        }
 
     @SuppressLint("MissingPermission")
     fun updateLocation(

@@ -5,8 +5,8 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,7 +42,9 @@ class MapViewModel() : ViewModel() {
     val scooters: StateFlow<List<ScooterModel>> get() = scooterList
 
     var riding by mutableStateOf(false)
-    var passedTime by mutableStateOf("")
+    var kmMode by mutableStateOf(false)
+    var passedTimeString by mutableStateOf("")
+    var passedTimeInMinutes by mutableIntStateOf(0)
     lateinit var startTime: MutableState<Date>
 
     fun getStartTime() {
@@ -56,19 +58,22 @@ class MapViewModel() : ViewModel() {
         return formatter.format(localData)
     }
 
-    fun GetPassedTime(){
+    fun GetPassedTime() {
         val currentTime = Date.from(Instant.now())
         val diffInMillies: Long = Math.abs(currentTime.time - startTime.value.time)
-        val diff: Long = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS)
-        passedTime = formatPassedTime(diff)
+        val diffInSeconds: Long = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS)
+        passedTimeInMinutes = ((diffInSeconds + 59) / 60).toInt()
+        passedTimeString = formatPassedTime(diffInSeconds)
     }
 
-    fun formatPassedTime(time: Long): String{
+    private fun formatPassedTime(time: Long): String {
         val minutes = time / 60
         val hours = time / 3600
 
         return if (time < 3600) {
-            "$minutes mins"
+            val secondsRemainder = time % 60
+            val formattedSeconds = String.format("%02d", secondsRemainder)
+            "$minutes:$formattedSeconds mins"
         } else {
             val minutesRemainder = minutes % 60
             val formattedMinutes = String.format("%02d", minutesRemainder)
