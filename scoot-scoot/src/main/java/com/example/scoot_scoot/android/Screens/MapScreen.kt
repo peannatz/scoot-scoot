@@ -1,6 +1,7 @@
 package com.example.scoot_scoot.android.Screens
 
 import android.annotation.SuppressLint
+import android.provider.Settings.Global.getString
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.ExperimentalMaterialApi
@@ -29,6 +30,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
@@ -37,6 +41,10 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberMarkerState
 import kotlinx.coroutines.launch
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
+import java.util.Properties
 
 object MapScreen {
 
@@ -44,7 +52,9 @@ object MapScreen {
     @Composable
     fun MapScreen(navController: NavController, mvm: MapViewModel = viewModel()) {
 
+
         val context = LocalContext.current
+
         val fusedLocationClient: FusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(context)
         val lng = LatLng(53.9, 9.00)
@@ -68,9 +78,8 @@ object MapScreen {
         }
 
         LaunchedEffect(mvm.useLocation.value) {
-            //delay()
             if (mvm.useLocation.value) {
-                updateLocation(fusedLocationClient, cameraState)
+                mvm.updateLocation(cameraState)
             }
         }
 
@@ -92,7 +101,7 @@ object MapScreen {
             properties = mapProperties,
             onMapLoaded = {
                 mvm.useLocation.value = true
-                updateLocation(fusedLocationClient, cameraState)
+                mvm.updateLocation(cameraState)
             },
             onMapClick = {
                 coroutineScope.launch { mvm.infoSheetState.hide() }
@@ -114,13 +123,12 @@ object MapScreen {
 
             }
         }
-        MapUi(navController, mvm, fusedLocationClient, cameraState)
+
+        MapUi(navController, mvm,fusedLocationClient, cameraState)
 
         mvm.selectedScooter.value?.let { marker ->
             MarkerInfoBottomSheet(mvm)
         }
-
-        //CurrenRideBottomSheet(mvm)
     }
 
     private fun selectScooter(mvm: MapViewModel, scooterModel: ScooterModel): (Marker) -> Boolean =
