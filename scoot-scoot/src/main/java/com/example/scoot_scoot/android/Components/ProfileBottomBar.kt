@@ -15,7 +15,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.R
-import com.example.scoot_scoot.android.Screens.Screens
 
 object ProfileBottomBar {
     @Composable
@@ -43,16 +42,16 @@ object ProfileBottomBar {
             },
                 label = { Text(text = "Trips") }
             )
-            BottomNavigationItem(selected = false, onClick = {navController.navigate(Screens.Map) }, icon = {
+            BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_map_24),
                     contentDescription = "",
                     modifier = Modifier.size(40.dp)
                 )
             },
-                label = { Text(text = "Return") }
+                label = { Text(text = "Trips") }
             )
-            BottomNavigationItem(selected = false, onClick = { navController.navigate(Screens.Profile)}, icon = {
+            BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "",
@@ -61,7 +60,7 @@ object ProfileBottomBar {
             },
                 label = { Text(text = "Account") }
             )
-            BottomNavigationItem(selected = false, onClick = { navController.navigate(Screens.Help) }, icon = {
+            BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.help),
                     contentDescription = "",
