@@ -1,20 +1,32 @@
 package com.example.scoot_scoot.android.ViewModels
 
+import android.annotation.SuppressLint
+import android.location.Location
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.scoot_scoot.android.Data.AutoCompleteResult
 import com.example.scoot_scoot.android.Data.ScooterModel
 import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.Repository.ScooterRepository
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.maps.android.compose.CameraPositionState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -42,13 +54,67 @@ class MapViewModel() : ViewModel() {
     val scooters: StateFlow<List<ScooterModel>> get() = scooterList
 
     var riding by mutableStateOf(false)
+    var lastLocation: MutableState<Location?> = mutableStateOf(null)
     var kmMode by mutableStateOf(false)
     var passedTimeString by mutableStateOf("")
     var passedTimeInMinutes by mutableIntStateOf(0)
     lateinit var startTime: MutableState<Date>
 
+    val locationAutofill = mutableStateListOf<AutoCompleteResult>()
+
+    private var job: Job? = null
+
+    fun searchPlaces(query: String, placesClient: PlacesClient) {
+        val autocompleteSessionToken = AutocompleteSessionToken.newInstance()
+        locationAutofill.clear()
+        viewModelScope.launch {
+            val request = FindAutocompletePredictionsRequest
+                .builder()
+                .setSessionToken(autocompleteSessionToken)
+                .setQuery(query)
+                .build()
+            placesClient
+                .findAutocompletePredictions(request)
+                .addOnSuccessListener { response ->
+                    locationAutofill += response.autocompletePredictions.map {
+                        println(it.placeId)
+                        AutoCompleteResult(
+                            it.placeId,
+                            it.placeId
+                        )
+                    }
+                }
+                .addOnFailureListener {
+                    println("TEST")
+                    it.printStackTrace()
+                    println(it.cause)
+                    println(it.message)
+                }
+
+        }
+    }
+
     fun getStartTime() {
         startTime = mutableStateOf(UserManager.getStartTime())
+    }
+
+    @SuppressLint("MissingPermission")
+    fun updateLocation(
+        cameraState: CameraPositionState
+    ) {
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                lastLocation = mutableStateOf(location)
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                val cameraPosition = CameraPosition.Builder()
+                    .target(currentLatLng)
+                    .zoom(17f)
+                    .build()
+
+                // Set the initial camera position
+                cameraState.move(CameraUpdateFactory.newCameraPosition(cameraPosition))
+            }
+        }
     }
 
     fun getFormattedTimeString(): String {
