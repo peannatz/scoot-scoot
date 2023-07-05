@@ -15,9 +15,6 @@ public class Ride {
     Date startTime;
     int rideLength;
     int price;
-    @ManyToOne(cascade = CascadeType.ALL)
-    User user;
-
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name="longitude", column = @Column(name = "startlongitude")),
@@ -61,14 +58,6 @@ public class Ride {
 
     public void setPrice(int price) {
         this.price = price;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Location getStartLocation() {
