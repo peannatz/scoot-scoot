@@ -1,7 +1,13 @@
 package com.example.scoot_scoot.android.Repository
 
 import com.example.scoot_scoot.android.Data.ScooterModel
+import com.example.scoot_scoot.android.Network.GoogleClient
 import com.example.scoot_scoot.android.Network.ScooterClient
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.tasks.Tasks.await
+import com.google.android.libraries.places.api.model.Place
+import com.google.maps.android.compose.GoogleMap
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

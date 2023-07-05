@@ -5,26 +5,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,15 +29,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
+import com.example.scoot_scoot.android.Components.AutocompleteSearchBox.AutocompleteSearchBox
 import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.R
+import com.example.scoot_scoot.android.Repository.GoogleRepository
+import com.example.scoot_scoot.android.Repository.ScooterRepository
 import com.example.scoot_scoot.android.ViewModels.MapViewModel
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.launch
 
 object MarkerInfoBottomSheet {
 
@@ -51,7 +47,7 @@ object MarkerInfoBottomSheet {
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun MarkerInfoBottomSheet( mvm: MapViewModel) {
+    fun MarkerInfoBottomSheet(mvm: MapViewModel) {
         val modalSheetState = mvm.infoSheetState
 
         ModalBottomSheetLayout(
@@ -59,24 +55,55 @@ object MarkerInfoBottomSheet {
             scrimColor = Color.Unspecified,
             sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
             sheetBackgroundColor = MaterialTheme.colors.background,
-            sheetContent = { if (!mvm.riding) ScooterInfo(mvm) else RidingInfoMinuteMode(mvm) }
+            sheetContent = { if (!mvm.riding) ScooterInfo(mvm) else RideInfo(mvm = mvm) }
         ) {
         }
     }
 
     @Composable
     fun RideInfo(mvm: MapViewModel) {
-        if (mvm.kmMode){
-            RidingInfoKmMode(mvm = mvm)
-        }else{
-            RidingInfoMinuteMode(mvm = mvm)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(horizontal = 40.dp, vertical = 20.dp)
+                .fillMaxWidth()
+        ) {
+            Text(text = mvm.selectedScooter.value!!.name, fontSize = 30.sp)
+
+            if (mvm.kmMode) {
+                RidingInfoKmMode(mvm = mvm)
+            } else {
+                RidingInfoMinuteMode(mvm = mvm)
+            }
         }
     }
 
+    fun GetRouteAndDistance(mvm: MapViewModel) {
+        mvm.viewModelScope.launch {
+            val latlng =
+                LatLng(mvm.lastLocation.value!!.latitude, mvm.lastLocation.value!!.longitude)
+            val route = GoogleRepository().getRoute(latlng, mvm.destination.value.placeId)
+            if (route != null) {
+                mvm.route = route
+            }
+        }
+    }
 
     @Composable
     fun RidingInfoKmMode(mvm: MapViewModel) {
-        Text(text = "TEST")
+        Spacer(modifier = Modifier.size(40.dp))
+
+        AutocompleteSearchBox(
+            mvm,
+            Modifier.fillMaxWidth(0.8f)
+        ) { GetRouteAndDistance(mvm) }
+        if (mvm.route.distanceMeters != 0) Text(text = convertToCurrencyStringKm(mvm))
+        Button(onClick = {
+            //Fahrt beginnen und ans Backend senden!!
+        })
+        {
+            Text(text = "Go")
+        }
     }
 
     @Composable
@@ -88,59 +115,58 @@ object MarkerInfoBottomSheet {
                 mvm.GetPassedTime()
             }
         }
+        //Infos zur Fahrt: Startzeit und Dauer
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
-                .padding(horizontal = 40.dp, vertical = 20.dp)
                 .fillMaxWidth()
+                .padding(top = 10.dp)
         ) {
-
-            //Infos zur Fahrt: Startzeit und Dauer
-
-            Text(text = mvm.selectedScooter.value!!.name, fontSize = 30.sp)
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp)
-            ) {
-                Text(
-                    text = "Start Time",
-                )
-                Text(
-                    text = "Time Passed",
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = mvm.getFormattedTimeString(),
-                    fontSize = 15.sp,
-                )
-                Text(
-                    text = mvm.passedTimeString,
-                    fontSize = 15.sp,
-                )
-            }
-
-            //Fahrtpreis
             Text(
-                text = convertToCurrencyString(mvm),
-                style = TextStyle(fontSize = 30.sp),
-                modifier = Modifier.padding(20.dp)
+                text = "Start Time",
             )
-
-            Button(onClick = { /*TODO*/ }) {
-                Text(text = "Stop scooting pls")
-            }
+            Text(
+                text = "Time Passed",
+            )
         }
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = mvm.getFormattedTimeString(),
+                fontSize = 15.sp,
+            )
+            Text(
+                text = mvm.passedTimeString,
+                fontSize = 15.sp,
+            )
+        }
+
+        //Fahrtpreis
+        Text(
+            text = convertToCurrencyStringMin(mvm),
+            style = TextStyle(fontSize = 30.sp),
+            modifier = Modifier.padding(20.dp)
+        )
+
+        Button(onClick = {
+            //TODO
+        }) {
+            Text(text = "Stop scooting pls")
+        }
+
     }
 
-    fun convertToCurrencyString(mvm: MapViewModel): String {
+    fun convertToCurrencyStringMin(mvm: MapViewModel): String {
         val euros = mvm.passedTimeInMinutes * priceMin / 100.0
+        val formattedString = String.format("%.2f", euros)
+        return "$formattedString€"
+    }
+
+    fun convertToCurrencyStringKm(mvm: MapViewModel): String {
+        val euros = mvm.route.distanceMeters / 1000 * priceKm / 100.0
         val formattedString = String.format("%.2f", euros)
         return "$formattedString€"
     }
@@ -156,7 +182,6 @@ object MarkerInfoBottomSheet {
             )
         )
         val regularTextStyle = TextStyle()
-        var pricePerKm by remember { mutableStateOf(false) }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -199,13 +224,13 @@ object MarkerInfoBottomSheet {
             val name = "s" + mvm.selectedScooter.value!!.id.toString()
             val context = LocalContext.current
             val drawableId1 = R.drawable.s0
-            val drawableId = remember(name) {
-                context.resources.getIdentifier(
-                    name,
-                    "drawable",
-                    context.packageName
-                )
-            }
+            /*            val drawableId = remember(name) {
+                            context.resources.getIdentifier(
+                                name,
+                                "drawable",
+                                context.packageName
+                            )
+                        }*/
 
             Image(
                 painter = painterResource(drawableId1), contentDescription = "",

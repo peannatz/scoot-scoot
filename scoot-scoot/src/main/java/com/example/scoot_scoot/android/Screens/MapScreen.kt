@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.provider.Settings.Global.getString
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -124,7 +125,7 @@ object MapScreen {
             }
         }
 
-        MapUi(navController, mvm,fusedLocationClient, cameraState)
+        MapUi(navController, mvm, fusedLocationClient, cameraState)
 
         mvm.selectedScooter.value?.let { marker ->
             MarkerInfoBottomSheet(mvm)
@@ -163,7 +164,6 @@ object MapScreen {
             battery = 75,
             available = true,
             location = Location(
-                id = 1,
                 latitude = 53.5511f,
                 longitude = 9.9937f
             ),
@@ -177,7 +177,6 @@ object MapScreen {
             available = true,
             location =
             Location(
-                id = 2,
                 latitude = 53.5532f,
                 longitude = 9.9986f
             ),
@@ -191,7 +190,6 @@ object MapScreen {
             available = false,
             location =
             Location(
-                id = 3,
                 latitude = 53.5503f,
                 longitude = 10.0006f
             ),

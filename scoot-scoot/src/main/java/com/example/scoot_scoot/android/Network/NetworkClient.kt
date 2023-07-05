@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 
@@ -22,7 +23,7 @@ abstract class NetworkClient {
     // Use usbUrl, when connecting using only a usb connection.
     // Use adb reverse tcp:8080 tcp:8080 to forward the port to the device.
 
-    protected val deviceUrl = "http://192.168.2.171:8080/"
+    protected val deviceUrl = "http://192.168.6.204:8080/"
     protected val usbUrl = "http://127.0.0.1:8080/"
     protected val emulatorUrl = "http://10.0.2.2:8080/"
     protected val baseUrl = chooseUrl()
@@ -36,7 +37,7 @@ abstract class NetworkClient {
     }
     protected fun postRequest(url: String, body: String): Boolean {
         val mediaType = "application/json; charset=utf-8".toMediaType()
-        val requestBody = RequestBody.create(mediaType, body)
+        val requestBody = body.toRequestBody(mediaType)
         val request = Request.Builder()
             .url(url)
             .post(requestBody)

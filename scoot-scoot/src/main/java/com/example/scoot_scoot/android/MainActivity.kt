@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     @UnstableApi
     @Composable
     fun Navigation() {

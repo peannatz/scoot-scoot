@@ -19,6 +19,7 @@ import com.example.scoot_scoot.android.R
 object ProfileBottomBar {
     @Composable
     fun ProfileBottomBar(navController: NavController) {
+        println(navController.context)
         BottomNavigation(
             modifier = Modifier.fillMaxHeight(),
             backgroundColor = MaterialTheme.colors.primary,

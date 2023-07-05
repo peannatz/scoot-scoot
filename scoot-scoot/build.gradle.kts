@@ -1,3 +1,4 @@
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -14,8 +15,10 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.7"
@@ -59,4 +62,5 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.31.5-beta")
     implementation("androidx.preference:preference:1.2.0")
     implementation("com.google.android.libraries.places:places:3.1.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
 }
