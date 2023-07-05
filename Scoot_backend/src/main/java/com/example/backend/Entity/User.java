@@ -28,7 +28,7 @@ public class User {
     @Column(columnDefinition = "integer DEFAULT 0")
     private int credit;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany
     List<Ride> rides;
 
     public long getId() {
