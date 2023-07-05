@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.example.scoot_scoot.android.Data.UserDataModel
+import com.example.scoot_scoot.android.Data.UserManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,10 +16,10 @@ class ProfileViewModel : UserDataViewModel() {
     lateinit var emailData: UserDataModel;
     lateinit var birthdateData: UserDataModel;
 
-    //TODO:exchange hard coded id for account id
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            val fetchedUser = userRepository.getUserById(3)
+            val userId=UserManager.getUserId()
+            val fetchedUser = userRepository.getUserById(userId)
             updateUser(fetchedUser)
             userFetched.value = true
             nameData = UserDataModel("Name", name, nameEdited) { validateName() }
@@ -50,7 +51,8 @@ class ProfileViewModel : UserDataViewModel() {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            userRepository.updateUser(3, userData)
+            val userId=UserManager.getUserId()
+            userRepository.updateUser(userId, userData)
         }
     }
 

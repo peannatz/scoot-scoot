@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -51,23 +52,28 @@ import kotlin.math.min
 @OptIn(ExperimentalComposeUiApi::class)
 object RegisterScreen {
 
-    var keyboardController : SoftwareKeyboardController? = null
+    var keyboardController: SoftwareKeyboardController? = null
 
     @Composable
     fun RegisterScreen(navController: NavController, rvm: RegisterViewModel = viewModel()) {
 
-        keyboardController=LocalSoftwareKeyboardController.current
+        keyboardController = LocalSoftwareKeyboardController.current
 
         val registerCallback = remember {
             object : RegisterCallback {
                 override fun onRegisterSuccess(user: UserData) {
                     MainScope().launch {
                         UserManager.saveUser(user)
-                        navController.navigate(Screens.Map)
+                        if (!UserManager.getPermissionsStatus()) {
+                            navController.navigate(Screens.Permissions)
+                        } else {
+                            navController.navigate(Screens.Map)
+                        }
                     }
                 }
+
                 override fun onRegisterError(errorMessage: String) {
-                    //500er code handeln doppele mail adresse
+                    println("Error: $errorMessage")
                 }
             }
         }
@@ -78,9 +84,10 @@ object RegisterScreen {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
+            Icon(
                 painter = painterResource(id = R.drawable.ic_scooter),
                 contentDescription = "",
+                tint = MaterialTheme.colors.secondary,
                 modifier = Modifier.size(width = 250.dp, height = 250.dp)
             )
             Text(
@@ -174,7 +181,7 @@ object RegisterScreen {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 keyboardActions = KeyboardActions(
                     onDone = { keyboardController?.hide() }),
-                )
+            )
             Text(
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -252,6 +259,7 @@ object RegisterScreen {
                 onValueChange = {
                     rvm.password.value = it
                     rvm.validatePassword()
+                    if (rvm.confirmPassword.value.isNotEmpty()) rvm.validateConfirmPassword()
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 keyboardActions = KeyboardActions(

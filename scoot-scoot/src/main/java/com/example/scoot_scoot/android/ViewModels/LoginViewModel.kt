@@ -23,7 +23,7 @@ class LoginViewModel : ViewModel() {
             val loggedIn = userRepository.checkLogin(email.value, password.value)
             if (loggedIn) {
                 loginErrorMsg.value = ""
-                val user=userRepository.getUserByEmail(email.value)
+                val user=userRepository.getUserByEmail(email.value, password.value)
                 loginCallback.onLoginSuccess(user)
             } else {
                 userNotFound()

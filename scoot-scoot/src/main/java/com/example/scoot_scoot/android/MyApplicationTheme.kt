@@ -35,7 +35,7 @@ fun MyApplicationTheme(
             background = Color(0xFF6DCBF1),
             primary = Color(0xFF127585),
             primaryVariant = Color(0xFF684FA3),
-            secondary = Color(0xFF54DBC8),
+            secondary = Color(0xFF237580),
             onPrimary = Color(0xFF9CF4FF),
             onSecondary = Color(0xFF0A5F6D)
         )

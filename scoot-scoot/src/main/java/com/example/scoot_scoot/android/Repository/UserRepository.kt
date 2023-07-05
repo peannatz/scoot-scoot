@@ -9,7 +9,7 @@ class UserRepository {
 
     suspend fun checkLogin(email: String, password: String): Boolean {
         return withContext(Dispatchers.IO) {
-            val user = UserClient.getUserByEmail(email)
+            val user = UserClient.getUserByEmail(email, password)
             user?.password == password
         }
     }
@@ -26,9 +26,9 @@ class UserRepository {
         }
     }
 
-    suspend fun getUserByEmail(email: String): UserData {
+    suspend fun getUserByEmail(email: String, password: String): UserData {
         return withContext(Dispatchers.IO) {
-            UserClient.getUserByEmail(email) as UserData
+            UserClient.getUserByEmail(email, password) as UserData
         }
     }
 

@@ -57,20 +57,13 @@ class RegisterViewModel : UserDataViewModel() {
         userData.birthdate = birthdate
         userData.email = email.value
         userData.password = password.value
-        Log.d("name", name.value)
-        Log.d("surname", surname.value)
-        Log.d("Birthdate", birthdate)
-        Log.d("email", email.value)
-        Log.d("password", password.value)
-        Log.d("confirmPassword", confirmPassword.value)
-        Log.d("user", userData.toString())
 
         val user=userRepository.registerUser(userData)
 
         if (user!= UserData()) {
             registerCallback.onRegisterSuccess(user)
         } else {
-            registerCallback.onRegisterError("")
+            registerCallback.onRegisterError("Empty User")
         }
     }
 

@@ -23,17 +23,6 @@ import java.util.concurrent.TimeoutException
 object GoogleClient {
     val gson = Gson()
 
-    data class ComputeRoutesRequest(
-        val origin: Origin,
-        val destination: Destination,
-        val travelMode: String,
-        val routing_preference: String
-    )
-
-    data class ComputeRoutesResponse(
-        val routes: List<RouteModel>
-    )
-
     val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
@@ -65,15 +54,13 @@ object GoogleClient {
             result = Tasks.await(placesClient!!.fetchPlace(request)).place
 
         } catch (e: ExecutionException) {
-            // Catch me
+
             println(e.message)
         } catch (e: TimeoutException) {
             println(e.message)
 
-            // Catch me, only needed when a timeout is set
         } catch (e: InterruptedException) {
             println(e.message)
-            // Catch me
         }
 
         if (result != null) {
@@ -86,8 +73,8 @@ object GoogleClient {
 
     fun request(origin: LatLng, destination: LatLng): RouteModel? {
         val requestData = ComputeRoutesRequest(
-            origin = Origin(Location(origin)),
-            destination = Destination(Location(destination)),
+            origin = Origin(LocationLatLng(origin)),
+            destination = Destination(LocationLatLng(destination)),
             travelMode = "DRIVE",
             routing_preference = "TRAFFIC_AWARE"
         )
@@ -122,16 +109,26 @@ object GoogleClient {
         return null
     }
 
+    data class ComputeRoutesRequest(
+        val origin: Origin,
+        val destination: Destination,
+        val travelMode: String,
+        val routing_preference: String
+    )
+
+    data class ComputeRoutesResponse(
+        val routes: List<RouteModel>
+    )
 
     data class Origin(
-        val location: Location
+        val location: LocationLatLng
     )
 
     data class Destination(
-        val location: Location
+        val location: LocationLatLng
     )
 
-    data class Location(
+    data class LocationLatLng(
         val latLng: LatLng
     )
 }
