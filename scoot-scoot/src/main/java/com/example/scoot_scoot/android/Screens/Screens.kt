@@ -10,4 +10,5 @@ object Screens {
     const val AlcTest = "AlcTest"
     const val Help = "HelpScreen"
     const val Permissions = "Permissions"
+    const val Balance = "Balance"
 }
