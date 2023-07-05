@@ -1,6 +1,7 @@
 package com.example.backend.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class User {
     private String surname;
     @Column(unique = true)
     private String email;
+    @NotNull
     private String password;
     private String birthdate;
     private int credit;
