@@ -9,5 +9,5 @@ data class UserData(
     var birthdate: String = "",
     var password: String = "",
     var credit: Int = 0,
-    var rides: List<RideModel> = emptyList()
+    var rides: ArrayList<RideModel> = ArrayList()
 )

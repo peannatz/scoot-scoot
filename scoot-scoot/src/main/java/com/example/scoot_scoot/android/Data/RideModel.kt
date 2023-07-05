@@ -5,10 +5,10 @@ import java.time.LocalDateTime
 import java.util.Date
 
 data class RideModel(
-    var id: Int,
+    var id: Int? = null,
     var startTime: Date,
-    var rideLength: Int,
-    var price: Int,
+    var rideLength: Int = 0,
+    var price: Int = 0,
     var startLocation: Location,
-    var endLocation: Location
+    var endLocation: Location? = null
 )
