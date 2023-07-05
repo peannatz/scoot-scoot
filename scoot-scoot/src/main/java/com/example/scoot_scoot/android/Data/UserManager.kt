@@ -66,15 +66,15 @@ object UserManager {
 
     fun saveUser(user: UserData) {
         sharedPreferences.edit {
-            putString(KEY_USER_ID, user.id.toString())
+            putInt(KEY_USER_ID, user.id!!)
             apply()
             putString(KEY_USER_NAME, user.surname)
             apply()
         }
     }
 
-    fun getUserId(): String? {
-        return sharedPreferences.getString(KEY_USER_ID, null)
+    fun getUserId(): Int {
+        return sharedPreferences.getInt(KEY_USER_ID, -1)
     }
 
     fun getUserName(): String? {
@@ -82,7 +82,7 @@ object UserManager {
     }
 
     fun isLoggedIn(): Boolean {
-        return getUserId() != null
+        return getUserId() != -1
     }
 
     fun clearUser() {
