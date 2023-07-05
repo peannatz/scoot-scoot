@@ -65,4 +65,9 @@ public class ScootController {
                 .toList();
     }
 
+    @PostMapping("/update/{id}")
+    public void updateScooter(@PathVariable long id,@RequestBody Scooter scooter){
+        scooterService.updateScooter(id, scooter);
+    }
+
 }
