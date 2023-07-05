@@ -1,3 +1,4 @@
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -14,8 +15,10 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.7"
@@ -52,7 +55,12 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.0-beta01")
     implementation("androidx.media3:media3-exoplayer:1.1.0-rc01")
     implementation("androidx.media3:media3-ui:1.1.0-rc01")
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("com.squareup.okhttp3:okhttp-tls:4.10.0")
-    implementation("com.google.code.gson:gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+    implementation("com.squareup.okhttp3:okhttp-tls:5.0.0-alpha.11")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.accompanist:accompanist-permissions:0.31.5-beta")
+    implementation("androidx.preference:preference:1.2.0")
+    implementation("com.google.android.libraries.places:places:3.1.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
 }

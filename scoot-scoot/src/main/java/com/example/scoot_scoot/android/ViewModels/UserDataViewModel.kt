@@ -42,6 +42,8 @@ abstract class UserDataViewModel(private val userId: Int? = null) : ViewModel() 
     }
 
     fun updateUser(updatedUser: UserData) {
+
+        //TODO: bessere Lösung finden das ist glaub ich etwas unnötiges hin und her
         _fetchedUserData.postValue(userData)
         userData = updatedUser
         name.value = userData.name
