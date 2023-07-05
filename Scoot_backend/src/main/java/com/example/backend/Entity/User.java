@@ -13,13 +13,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
+    @NotNull
     private String name;
+    @NotNull
     private String surname;
+    @NotNull
     @Column(unique = true)
     private String email;
     @NotNull
     private String password;
+    @NotNull
     private String birthdate;
+    @NotNull
     private int credit;
 
     @OneToMany(mappedBy = "user")
