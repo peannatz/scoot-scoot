@@ -26,7 +26,7 @@ object ProfileBottomBar {
             backgroundColor = MaterialTheme.colors.primary,
             contentColor = MaterialTheme.colors.onPrimary
         ) {
-            BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            BottomNavigationItem(selected = false, onClick = { navController.navigate(Screens.Balance) }, icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.money),
                     contentDescription = "",

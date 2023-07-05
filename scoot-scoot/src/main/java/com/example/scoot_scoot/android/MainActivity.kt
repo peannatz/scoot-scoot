@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.Screens.AlcoholTest.AlcoholTest
+import com.example.scoot_scoot.android.Screens.Balance.Balance
 import com.example.scoot_scoot.android.Screens.Dashboard.Dashboard
 import com.example.scoot_scoot.android.Screens.LoginScreen.LoginScreen
 import com.example.scoot_scoot.android.Screens.MapScreen.MapScreen
@@ -21,13 +22,7 @@ import com.example.scoot_scoot.android.Screens.ProfileScreen.ProfileScreen
 import com.example.scoot_scoot.android.Screens.RegisterScreen.RegisterScreen
 import com.example.scoot_scoot.android.Screens.Screens
 import com.example.scoot_scoot.android.Screens.SplashScreen.SplashScreen
-import com.google.android.gms.common.api.internal.ApiKey
-import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.InputStream
-import java.util.Properties
 
 @UnstableApi
 class MainActivity : ComponentActivity() {
@@ -55,7 +50,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun Navigation() {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = Screens.Permissions) {
+        NavHost(navController = navController, startDestination = Screens.Splash) {
             composable(Screens.Splash) {
                 SplashScreen(navController)
             }
@@ -65,7 +60,9 @@ class MainActivity : ComponentActivity() {
             composable(Screens.Login) { LoginScreen(navController) }
             composable(Screens.Profile) { ProfileScreen(navController) }
             composable(Screens.AlcTest) { AlcoholTest(navController) }
+            composable(Screens.Splash) { SplashScreen(navController) }
             composable(Screens.Permissions) { PermissionsScreen(navController) }
+            composable(Screens.Balance) { Balance(navController) }
         }
 
     }
