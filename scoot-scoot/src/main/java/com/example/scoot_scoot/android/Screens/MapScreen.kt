@@ -157,7 +157,7 @@ object MapScreen {
         }
     }
 
-    val scooterSampleData: List<ScooterModel> = listOf(
+/*    val scooterSampleData: List<ScooterModel> = listOf(
         ScooterModel(
             id = 1,
             name = "Scooter McScootface",
@@ -195,5 +195,5 @@ object MapScreen {
             ),
             "PREMIUM"
         )
-    )
+    )*/
 }

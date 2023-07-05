@@ -38,6 +38,7 @@ object UserManager {
     }
 
     fun getPermissionsStatus(): Boolean {
+        println("Permission: ${sharedPreferences.getBoolean(KEY_LOCATION_PERMISSIONS, false)}")
         return sharedPreferences.getBoolean(KEY_LOCATION_PERMISSIONS, false)
     }
 

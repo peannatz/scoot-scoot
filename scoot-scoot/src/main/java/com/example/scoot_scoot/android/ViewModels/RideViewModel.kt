@@ -3,6 +3,7 @@ package com.example.scoot_scoot.android.ViewModels
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -20,6 +21,7 @@ class RideViewModel() : ViewModel() {
     var kmMode by mutableStateOf(false)
     var passedTimeString by mutableStateOf("")
     var passedTimeInMinutes by mutableIntStateOf(0)
+    var passedTimeInSeconds by mutableLongStateOf(0)
     lateinit var startTime: MutableState<Date>
     var destination = mutableStateOf(AutoCompleteResult("", ""))
     var route by mutableStateOf(RouteModel(0,""))
@@ -39,9 +41,9 @@ class RideViewModel() : ViewModel() {
     fun GetPassedTime() {
         val currentTime = Date.from(Instant.now())
         val diffInMillies: Long = Math.abs(currentTime.time - startTime.value.time)
-        val diffInSeconds: Long = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS)
-        passedTimeInMinutes = ((diffInSeconds + 59) / 60).toInt()
-        passedTimeString = formatPassedTime(diffInSeconds)
+        passedTimeInSeconds = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS)
+        passedTimeInMinutes = ((passedTimeInSeconds + 59) / 60).toInt()
+        passedTimeString = formatPassedTime(passedTimeInSeconds)
     }
 
     private fun formatPassedTime(time: Long): String {

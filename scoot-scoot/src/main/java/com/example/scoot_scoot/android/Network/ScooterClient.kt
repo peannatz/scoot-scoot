@@ -1,6 +1,7 @@
 package com.example.scoot_scoot.android.Network
 
 import com.example.scoot_scoot.android.Data.ScooterModel
+import com.example.scoot_scoot.android.Data.UserData
 import com.example.scoot_scoot.android.Network.UserClient.gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -30,6 +31,19 @@ object ScooterClient:NetworkClient() {
         val scooterJson = getRequest(url) ?: return listOf()
         return listOf(gson.fromJson(scooterJson, scooterListType))
     }
+
+    fun updateScooterbyId(id: Int, scooter:ScooterModel):Boolean {
+
+        val url = "${baseUrl}scooter/update/$id"
+        val jsonPayload = gson.toJson(scooter)
+
+        val response= postRequest(url, jsonPayload)
+        if(response!=null){
+            return true
+        }
+        return false
+    }
+
 
 
 }

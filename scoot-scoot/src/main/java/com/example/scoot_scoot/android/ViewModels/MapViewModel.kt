@@ -47,6 +47,9 @@ class MapViewModel() : ViewModel() {
     var selectedScooter: MutableState<ScooterModel?> = mutableStateOf(null)
     var lastLocation: MutableState<Location?> = mutableStateOf(null)
 
+    val latitudeRange = listOf(53.395, 53.729)
+    val longitudeRange = listOf(9.712, 10.327)
+
     var useLocation = mutableStateOf(true)
     lateinit var fusedLocationClient: FusedLocationProviderClient
 
