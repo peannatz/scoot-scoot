@@ -1,17 +1,12 @@
 package com.example.scoot_scoot.android.Network
 
-import android.content.ContentValues.TAG
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.util.Log
 import com.example.scoot_scoot.android.BuildConfig
 import com.example.scoot_scoot.android.Components.AutocompleteSearchBox.placesClient
-import com.example.scoot_scoot.android.Data.Location
-import com.google.android.gms.common.api.ApiException
+import com.example.scoot_scoot.android.Data.RouteModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Tasks
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
-import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -36,12 +31,7 @@ object GoogleClient {
     )
 
     data class ComputeRoutesResponse(
-        val routes: List<Route>
-    )
-
-    data class Route(
-        val distanceMeters: Int,
-        val routeToken: String,
+        val routes: List<RouteModel>
     )
 
     val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -94,7 +84,7 @@ object GoogleClient {
     }
 
 
-    fun request(origin: LatLng, destination: LatLng): Route? {
+    fun request(origin: LatLng, destination: LatLng): RouteModel? {
         val requestData = ComputeRoutesRequest(
             origin = Origin(Location(origin)),
             destination = Destination(Location(destination)),

@@ -1,5 +1,6 @@
 package com.example.scoot_scoot.android.Repository
 
+import com.example.scoot_scoot.android.Data.RouteModel
 import com.example.scoot_scoot.android.Network.GoogleClient
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
@@ -7,7 +8,7 @@ import kotlinx.coroutines.withContext
 
 class GoogleRepository {
 
-    suspend fun getRoute(origin: LatLng, destination: String): GoogleClient.Route? {
+    suspend fun getRoute(origin: LatLng, destination: String): RouteModel? {
         return withContext(Dispatchers.IO) {
             val destinationLatLng = getPlaceLatLng(destination)
             if (destinationLatLng != null) {

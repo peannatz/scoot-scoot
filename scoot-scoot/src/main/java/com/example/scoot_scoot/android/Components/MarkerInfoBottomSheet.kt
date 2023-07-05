@@ -30,12 +30,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scoot_scoot.android.Components.AutocompleteSearchBox.AutocompleteSearchBox
 import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.Repository.GoogleRepository
 import com.example.scoot_scoot.android.Repository.ScooterRepository
 import com.example.scoot_scoot.android.ViewModels.MapViewModel
+import com.example.scoot_scoot.android.ViewModels.RideViewModel
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,7 +49,7 @@ object MarkerInfoBottomSheet {
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun MarkerInfoBottomSheet(mvm: MapViewModel) {
+    fun MarkerInfoBottomSheet(mvm: MapViewModel = viewModel(), rvm: RideViewModel = viewModel()) {
         val modalSheetState = mvm.infoSheetState
 
         ModalBottomSheetLayout(
@@ -55,13 +57,13 @@ object MarkerInfoBottomSheet {
             scrimColor = Color.Unspecified,
             sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
             sheetBackgroundColor = MaterialTheme.colors.background,
-            sheetContent = { if (!mvm.riding) ScooterInfo(mvm) else RideInfo(mvm = mvm) }
+            sheetContent = { if (!rvm.riding) ScooterInfo() else RideInfo() }
         ) {
         }
     }
 
     @Composable
-    fun RideInfo(mvm: MapViewModel) {
+    fun RideInfo(mvm: MapViewModel = viewModel(), rvm: RideViewModel = viewModel()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -70,34 +72,33 @@ object MarkerInfoBottomSheet {
         ) {
             Text(text = mvm.selectedScooter.value!!.name, fontSize = 30.sp)
 
-            if (mvm.kmMode) {
-                RidingInfoKmMode(mvm = mvm)
+            if (rvm.kmMode) {
+                RidingInfoKmMode()
             } else {
-                RidingInfoMinuteMode(mvm = mvm)
+                RidingInfoMinuteMode()
             }
         }
     }
 
-    fun GetRouteAndDistance(mvm: MapViewModel) {
+    fun GetRouteAndDistance(mvm: MapViewModel, rvm: RideViewModel) {
         mvm.viewModelScope.launch {
             val latlng =
                 LatLng(mvm.lastLocation.value!!.latitude, mvm.lastLocation.value!!.longitude)
-            val route = GoogleRepository().getRoute(latlng, mvm.destination.value.placeId)
+            val route = GoogleRepository().getRoute(latlng, rvm.destination.value.placeId)
             if (route != null) {
-                mvm.route = route
+                rvm.route = route
             }
         }
     }
 
     @Composable
-    fun RidingInfoKmMode(mvm: MapViewModel) {
+    fun RidingInfoKmMode(mvm: MapViewModel = viewModel(), rvm: RideViewModel = viewModel()) {
         Spacer(modifier = Modifier.size(40.dp))
 
         AutocompleteSearchBox(
-            mvm,
-            Modifier.fillMaxWidth(0.8f)
-        ) { GetRouteAndDistance(mvm) }
-        if (mvm.route.distanceMeters != 0) Text(text = convertToCurrencyStringKm(mvm))
+            Modifier.fillMaxWidth(0.8f), { GetRouteAndDistance(mvm, rvm) }, mvm.lastLocation.value!!
+        )
+        if (rvm.route.distanceMeters != 0) Text(text = convertToCurrencyStringKm(rvm))
         Button(onClick = {
             //Fahrt beginnen und ans Backend senden!!
         })
@@ -107,12 +108,12 @@ object MarkerInfoBottomSheet {
     }
 
     @Composable
-    fun RidingInfoMinuteMode(mvm: MapViewModel) {
+    fun RidingInfoMinuteMode(rvm: RideViewModel = viewModel()) {
 
         LaunchedEffect(Unit) {
-            while (mvm.riding) {
+            while (rvm.riding) {
                 delay(1000)
-                mvm.GetPassedTime()
+                rvm.GetPassedTime()
             }
         }
         //Infos zur Fahrt: Startzeit und Dauer
@@ -135,18 +136,18 @@ object MarkerInfoBottomSheet {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = mvm.getFormattedTimeString(),
+                text = rvm.getFormattedTimeString(),
                 fontSize = 15.sp,
             )
             Text(
-                text = mvm.passedTimeString,
+                text = rvm.passedTimeString,
                 fontSize = 15.sp,
             )
         }
 
         //Fahrtpreis
         Text(
-            text = convertToCurrencyStringMin(mvm),
+            text = convertToCurrencyStringMin(rvm),
             style = TextStyle(fontSize = 30.sp),
             modifier = Modifier.padding(20.dp)
         )
@@ -159,21 +160,21 @@ object MarkerInfoBottomSheet {
 
     }
 
-    fun convertToCurrencyStringMin(mvm: MapViewModel): String {
-        val euros = mvm.passedTimeInMinutes * priceMin / 100.0
+    fun convertToCurrencyStringMin(rvm: RideViewModel): String {
+        val euros = rvm.passedTimeInMinutes * priceMin / 100.0
         val formattedString = String.format("%.2f", euros)
         return "$formattedString€"
     }
 
-    fun convertToCurrencyStringKm(mvm: MapViewModel): String {
-        val euros = mvm.route.distanceMeters / 1000 * priceKm / 100.0
+    fun convertToCurrencyStringKm(rvm: RideViewModel): String {
+        val euros = rvm.route.distanceMeters / 1000 * priceKm / 100.0
         val formattedString = String.format("%.2f", euros)
         return "$formattedString€"
     }
 
 
     @Composable
-    fun ScooterInfo(mvm: MapViewModel) {
+    fun ScooterInfo(mvm: MapViewModel = viewModel(), rvm: RideViewModel = viewModel()) {
 
         val glowingTextStyle = TextStyle(
             shadow = Shadow(
@@ -198,11 +199,11 @@ object MarkerInfoBottomSheet {
             ) {
                 Text(
                     text = "minute price",
-                    style = if (!mvm.kmMode) glowingTextStyle else regularTextStyle
+                    style = if (!rvm.kmMode) glowingTextStyle else regularTextStyle
                 )
                 Text(
                     text = "km price",
-                    style = if (mvm.kmMode) glowingTextStyle else regularTextStyle
+                    style = if (rvm.kmMode) glowingTextStyle else regularTextStyle
                 )
             }
             Row(
@@ -212,12 +213,12 @@ object MarkerInfoBottomSheet {
                 Text(
                     text = "$priceMin ct",
                     fontSize = 15.sp,
-                    style = if (!mvm.kmMode) glowingTextStyle else regularTextStyle
+                    style = if (!rvm.kmMode) glowingTextStyle else regularTextStyle
                 )
                 Text(
                     text = "$priceKm ct",
                     fontSize = 15.sp,
-                    style = if (mvm.kmMode) glowingTextStyle else regularTextStyle
+                    style = if (rvm.kmMode) glowingTextStyle else regularTextStyle
                 )
             }
 
@@ -242,9 +243,9 @@ object MarkerInfoBottomSheet {
                 Button(
                     onClick = {
                         UserManager.saveStartTime()
-                        mvm.getStartTime()
-                        mvm.GetPassedTime()
-                        mvm.riding = true
+                        rvm.getStartTime()
+                        rvm.GetPassedTime()
+                        rvm.riding = true
                     },
                     Modifier.align(Alignment.Center)
                 ) {
@@ -257,10 +258,10 @@ object MarkerInfoBottomSheet {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(text = "Current Mode:")
-                    Text(text = if (mvm.kmMode) "km" else "minute")
+                    Text(text = if (rvm.kmMode) "km" else "minute")
                     Switch(
-                        checked = mvm.kmMode,
-                        onCheckedChange = { _value -> mvm.kmMode = _value })
+                        checked = rvm.kmMode,
+                        onCheckedChange = { _value -> rvm.kmMode = _value })
                 }
             }
         }

@@ -75,7 +75,7 @@ object MapUi {
                     modifier = Modifier.size(30.dp)
                 )
             }
-            AutocompleteSearchBox(mvm, Modifier.align(Alignment.BottomCenter)) { }
+           // AutocompleteSearchBox(Modifier.align(Alignment.BottomCenter), {}, mvm.lastLocation.value!!)
         }
     }
 

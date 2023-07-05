@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.scoot_scoot.android.Data.AutoCompleteResult
+import com.example.scoot_scoot.android.Data.RouteModel
 import com.example.scoot_scoot.android.Data.ScooterModel
 import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.Network.GoogleClient
@@ -44,6 +45,7 @@ class MapViewModel() : ViewModel() {
 
     private val scooterRepository = ScooterRepository()
     var selectedScooter: MutableState<ScooterModel?> = mutableStateOf(null)
+    var lastLocation: MutableState<Location?> = mutableStateOf(null)
 
     var useLocation = mutableStateOf(true)
     lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -56,76 +58,8 @@ class MapViewModel() : ViewModel() {
     private val scooterList = MutableStateFlow(listOf<ScooterModel>())
     val scooters: StateFlow<List<ScooterModel>> get() = scooterList
 
-    var riding by mutableStateOf(false)
-    var lastLocation: MutableState<Location?> = mutableStateOf(null)
-    var kmMode by mutableStateOf(false)
-    var passedTimeString by mutableStateOf("")
-    var passedTimeInMinutes by mutableIntStateOf(0)
-    lateinit var startTime: MutableState<Date>
-    var destination = mutableStateOf(AutoCompleteResult("", ""))
-    var route by mutableStateOf(GoogleClient.Route(0,""))
 
-    val locationAutofill = mutableStateListOf<AutoCompleteResult>()
 
-    fun searchPlaces(query: String, placesClient: PlacesClient) {
-        if (query.length <= 3) {
-            return
-        }
-        val autocompleteSessionToken = AutocompleteSessionToken.newInstance()
-
-        val bias = RectangularBounds.newInstance(
-            getCoordinate(
-                lastLocation.value!!.latitude,
-                lastLocation.value!!.longitude,
-                -1000,
-                -1000
-            )!!,
-            getCoordinate(
-                lastLocation.value!!.latitude,
-                lastLocation.value!!.longitude,
-                1000,
-                1000
-            )!!
-        )
-        locationAutofill.clear()
-        viewModelScope.launch {
-            val request = FindAutocompletePredictionsRequest
-                .builder()
-                .setLocationBias(bias)
-                .setSessionToken(autocompleteSessionToken)
-                .setQuery(query)
-                .build()
-            placesClient
-                .findAutocompletePredictions(request)
-                .addOnSuccessListener { response ->
-                    val predictionLimit = 3
-
-                    locationAutofill += response.autocompletePredictions
-                        .take(predictionLimit).map {
-                            AutoCompleteResult(
-                                it.getFullText(null).toString(),
-                                it.placeId
-                            )
-                        }
-                }
-                .addOnFailureListener {
-                    it.printStackTrace()
-                    println(it.cause)
-                    println(it.message)
-                }
-
-        }
-    }
-
-    fun getCoordinate(lat0: Double, lng0: Double, dy: Long, dx: Long): LatLng? {
-        val lat = lat0 + 180 / Math.PI * (dy / 6378137)
-        val lng = lng0 + 180 / Math.PI * (dx / 6378137) / Math.cos(lat0)
-        return LatLng(lat, lng)
-    }
-
-    fun getStartTime() {
-        startTime = mutableStateOf(UserManager.getStartTime())
-    }
 
     @SuppressLint("MissingPermission")
     fun updateLocation(
@@ -143,36 +77,6 @@ class MapViewModel() : ViewModel() {
                 // Set the initial camera position
                 cameraState.move(CameraUpdateFactory.newCameraPosition(cameraPosition))
             }
-        }
-    }
-
-    fun getFormattedTimeString(): String {
-        var formatter = DateTimeFormatter.ofPattern("HH:mm")
-        val localData =
-            startTime.value.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        return formatter.format(localData)
-    }
-
-    fun GetPassedTime() {
-        val currentTime = Date.from(Instant.now())
-        val diffInMillies: Long = Math.abs(currentTime.time - startTime.value.time)
-        val diffInSeconds: Long = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS)
-        passedTimeInMinutes = ((diffInSeconds + 59) / 60).toInt()
-        passedTimeString = formatPassedTime(diffInSeconds)
-    }
-
-    private fun formatPassedTime(time: Long): String {
-        val minutes = time / 60
-        val hours = time / 3600
-
-        return if (time < 3600) {
-            val secondsRemainder = time % 60
-            val formattedSeconds = String.format("%02d", secondsRemainder)
-            "$minutes:$formattedSeconds mins"
-        } else {
-            val minutesRemainder = minutes % 60
-            val formattedMinutes = String.format("%02d", minutesRemainder)
-            "$hours:$formattedMinutes h"
         }
     }
 

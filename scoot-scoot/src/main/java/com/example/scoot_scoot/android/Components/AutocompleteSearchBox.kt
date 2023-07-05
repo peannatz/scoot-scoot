@@ -1,5 +1,6 @@
 package com.example.scoot_scoot.android.Components
 
+import android.location.Location
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,8 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scoot_scoot.android.BuildConfig
-import com.example.scoot_scoot.android.ViewModels.MapViewModel
+import com.example.scoot_scoot.android.ViewModels.AutocompleteViewModel
+import com.example.scoot_scoot.android.ViewModels.RideViewModel
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import java.io.IOException
@@ -35,9 +38,11 @@ object AutocompleteSearchBox {
 
     @Composable
     fun AutocompleteSearchBox(
-        mvm: MapViewModel,
         modifier: Modifier = Modifier,
-        onTextChange: () -> Unit
+        onTextChange: () -> Unit,
+        lastLocation: Location,
+        avm: AutocompleteViewModel = viewModel(),
+        rvm: RideViewModel = viewModel()
     ) {
 
         val context = LocalContext.current
@@ -52,10 +57,10 @@ object AutocompleteSearchBox {
         }
 
         var destinationText =
-            remember { mutableStateOf(TextFieldValue(mvm.destination.value.address)) }
+            remember { mutableStateOf(TextFieldValue(rvm.destination.value.address)) }
 
         AnimatedVisibility(
-            mvm.locationAutofill.isNotEmpty(),
+            avm.locationAutofill.isNotEmpty(),
             modifier = Modifier
                 .fillMaxWidth(0.84f)
                 .padding(8.dp)
@@ -68,16 +73,16 @@ object AutocompleteSearchBox {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 reverseLayout = true
             ) {
-                itemsIndexed(mvm.locationAutofill) { _, item ->
+                itemsIndexed(avm.locationAutofill) { _, item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
                             .clickable {
-                                mvm.destination.value = item
+                                rvm.destination.value = item
                                 destinationText.value = TextFieldValue(item.address)
                                 onTextChange()
-                                mvm.locationAutofill.clear()
+                                avm.locationAutofill.clear()
                             }
                     ) {
                         Text(item.address)
@@ -93,8 +98,8 @@ object AutocompleteSearchBox {
             onValueChange =
             {
                 destinationText.value = it
-                mvm.destination.value.address = it.text
-                mvm.searchPlaces(it.text, placesClient!!)
+                rvm.destination.value.address = it.text
+                avm.searchPlaces(it.text, placesClient!!, lastLocation)
             }, Modifier
                 .fillMaxWidth(0.8f)
                 .run { modifier }
