@@ -34,7 +34,7 @@ public class ScooterService {
     }
 
     public ScooterDto getWithTierType(long id){
-        Scooter scooter = scooterRepository.findById(id).orElseThrow();
+        Scooter scooter = scooterRepository.findById(id).orElseThrow(() -> new RuntimeException("There does not exist a Scooter with this Id"));
         TierTypeDto tierTypeDto = new TierTypeDto(scooter.getTier(), scooter.getTier().getMinutePrice(), scooter.getTier().getKilometrePrice());
         return new ScooterDto(scooter.getId(),scooter.getName(), scooter.getBattery(), scooter.isAvailable(), scooter.getLocation(), tierTypeDto);
     }

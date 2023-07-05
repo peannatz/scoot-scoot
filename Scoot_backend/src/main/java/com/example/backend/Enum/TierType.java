@@ -1,8 +1,8 @@
 package com.example.backend.Enum;
 
 public enum TierType {
-    BASIC(2, 5),
-    PREMIUM(10, 20);
+    BASIC(8, 20),
+    PREMIUM(40, 100);
 
     final int minutePrice;
     final int kilometrePrice;

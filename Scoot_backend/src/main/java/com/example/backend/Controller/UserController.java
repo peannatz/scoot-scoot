@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController()
@@ -35,8 +36,14 @@ public class UserController {
     }
 
     @GetMapping("/getByEmail/{email}")
-    public Optional<User> getByEmail(@PathVariable String email){
-        return userRepository.findByEmail(email);
+    public User getByEmail(@PathVariable String email, @RequestParam String password){
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("There is no user with the specified email"));
+        if (Objects.equals(user.getPassword(), password)) {
+            return user;
+        } else {
+            throw new RuntimeException("Invalid credentials");
+        }
     }
 
     @PostMapping("/update/{id}")
