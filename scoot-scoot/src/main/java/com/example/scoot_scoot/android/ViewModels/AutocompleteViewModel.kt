@@ -24,14 +24,14 @@ class AutocompleteViewModel() : ViewModel() {
             getCoordinate(
                 lastLocation.latitude,
                 lastLocation.longitude,
-                -1000,
-                -1000
+                -100,
+                -100
             )!!,
             getCoordinate(
                 lastLocation.latitude,
                 lastLocation.longitude,
-                1000,
-                1000
+                100,
+                100
             )!!
         )
         locationAutofill.clear()

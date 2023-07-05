@@ -98,7 +98,7 @@ object MarkerInfoBottomSheet {
         AutocompleteSearchBox(
             Modifier.fillMaxWidth(0.8f), { GetRouteAndDistance(mvm, rvm) }, mvm.lastLocation.value!!
         )
-        if (rvm.route.distanceMeters != 0) Text(text = convertToCurrencyStringKm(rvm))
+        if (rvm.route.distanceMeters != 0) Text(text = convertToCurrencyStringKm(rvm), fontSize = 40.sp)
         Button(onClick = {
             //Fahrt beginnen und ans Backend senden!!
         })
