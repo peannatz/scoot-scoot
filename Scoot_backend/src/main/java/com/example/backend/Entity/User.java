@@ -25,6 +25,7 @@ public class User {
     @NotNull
     private String birthdate;
     @NotNull
+    @Column(name = "credit", columnDefinition = "int DEFAULT '0'")
     private int credit;
 
     @OneToMany(mappedBy = "user")
