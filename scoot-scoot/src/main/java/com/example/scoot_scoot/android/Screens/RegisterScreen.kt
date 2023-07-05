@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
@@ -18,7 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -44,11 +48,15 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
+@OptIn(ExperimentalComposeUiApi::class)
 object RegisterScreen {
+
+    var keyboardController : SoftwareKeyboardController? = null
 
     @Composable
     fun RegisterScreen(navController: NavController, rvm: RegisterViewModel = viewModel()) {
 
+        keyboardController=LocalSoftwareKeyboardController.current
 
         val registerCallback = remember {
             object : RegisterCallback {
@@ -58,7 +66,6 @@ object RegisterScreen {
                         navController.navigate(Screens.Map)
                     }
                 }
-
                 override fun onRegisterError(errorMessage: String) {
                     //500er code handeln doppele mail adresse
                 }
@@ -139,6 +146,8 @@ object RegisterScreen {
                 label = { Text(text = "Name") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
             )
             Text(
                 modifier = Modifier
@@ -163,7 +172,9 @@ object RegisterScreen {
                 label = { Text(text = "Surname") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            )
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
+                )
             Text(
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -189,6 +200,8 @@ object RegisterScreen {
                     }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
                 visualTransformation = DateTransformation(),
                 singleLine = true,
                 label = { Text(text = "Birthdate") },
@@ -214,6 +227,8 @@ object RegisterScreen {
                     rvm.validateEmail()
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
                 singleLine = true,
                 label = { Text(text = "Email") },
             )
@@ -239,6 +254,8 @@ object RegisterScreen {
                     rvm.validatePassword()
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
                 visualTransformation = PasswordVisualTransformation(),
                 singleLine = true,
                 label = { Text(text = "Password") },
@@ -265,6 +282,8 @@ object RegisterScreen {
                     rvm.validateConfirmPassword()
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardActions = KeyboardActions(
+                    onDone = { keyboardController?.hide() }),
                 visualTransformation = PasswordVisualTransformation(),
                 singleLine = true,
                 label = { Text(text = "Confirm Password") },

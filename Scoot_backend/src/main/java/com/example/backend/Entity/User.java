@@ -1,6 +1,7 @@
 package com.example.backend.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -12,12 +13,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     long id;
 
+    @NotNull
     private String name;
+    @NotNull
     private String surname;
+    @NotNull
     @Column(unique = true)
     private String email;
+    @NotNull
     private String password;
+    @NotNull
     private String birthdate;
+    @NotNull
+    @Column(columnDefinition = "integer DEFAULT 0")
     private int credit;
 
     @OneToMany(mappedBy = "user")

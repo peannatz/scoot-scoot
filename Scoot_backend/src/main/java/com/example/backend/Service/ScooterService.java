@@ -4,6 +4,7 @@ import com.example.backend.DTO.ScooterDto;
 import com.example.backend.DTO.TierTypeDto;
 import com.example.backend.Entity.Scooter;
 import com.example.backend.Repository.ScooterRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,9 +14,11 @@ import java.util.List;
 public class ScooterService {
 
     ScooterRepository scooterRepository;
+    ModelMapper modelMapper;
 
-    public ScooterService(ScooterRepository scooterRepository){
+    public ScooterService(ScooterRepository scooterRepository, ModelMapper modelMapper){
         this.scooterRepository = scooterRepository;
+        this.modelMapper = modelMapper;
     }
 
     public List<Scooter> getScootersByBattery(int battery){
@@ -30,9 +33,16 @@ public class ScooterService {
         return scooterBatteryList;
     }
 
-    public ScooterDto getById(long id){
-        Scooter scooter = scooterRepository.findById(id).orElseThrow();
+    public ScooterDto getWithTierType(long id){
+        Scooter scooter = scooterRepository.findById(id).orElseThrow(() -> new RuntimeException("There does not exist a Scooter with this Id"));
         TierTypeDto tierTypeDto = new TierTypeDto(scooter.getTier(), scooter.getTier().getMinutePrice(), scooter.getTier().getKilometrePrice());
         return new ScooterDto(scooter.getId(),scooter.getName(), scooter.getBattery(), scooter.isAvailable(), scooter.getLocation(), tierTypeDto);
+    }
+
+    public void updateScooter(long id, Scooter scooter){
+        Scooter existingScooter = scooterRepository.findById(id).orElseThrow(() -> new RuntimeException("Cant find Scooter with the given Id"));
+        modelMapper.map(scooter, existingScooter, "id");
+        existingScooter.setId(id);
+        scooterRepository.save(existingScooter);
     }
 }
