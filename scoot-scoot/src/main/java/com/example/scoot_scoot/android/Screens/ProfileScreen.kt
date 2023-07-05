@@ -51,8 +51,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 object ProfileScreen {
+
+    //TODO: find a better solution to wait for fetched user
     @Composable
     fun ProfileScreen(navController: NavController, pvm: ProfileViewModel = viewModel()) {
+
         if (pvm.userFetched.value) {
             Scaffold(
                 bottomBar = {
