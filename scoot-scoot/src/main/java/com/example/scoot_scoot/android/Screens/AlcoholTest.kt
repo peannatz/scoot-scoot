@@ -47,11 +47,11 @@ import kotlin.math.roundToInt
 
 object AlcoholTest {
 
-    val firstCardVisible = mutableStateOf(true)
+    val firstCardVisible = mutableStateOf(UserManager.showTutorial())
     val secondCardVisible = mutableStateOf(false)
     val thirdCardVisible = mutableStateOf(false)
     val fourthCardVisible = mutableStateOf(false)
-    val introCardVisible = mutableStateOf(false)
+    val introCardVisible = mutableStateOf(!UserManager.showTutorial())
     val countdownVisible = mutableStateOf(false)
     val testPassed = mutableStateOf(false)
     val testFailed = mutableStateOf(false)
@@ -59,18 +59,13 @@ object AlcoholTest {
 
     @Composable
     fun AlcoholTest(navController: NavController) {
-        if (UserManager.checkIfUserHasAttempts()){
-
-        }else{
+        if (UserManager.checkIfUserHasAttempts()) {
             Column(
                 Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (UserManager.showTutorial()) {
-                    firstCardVisible.value = false
-                    introCardVisible.value = true
-                }
+
                 AnimatedVisibility(visible = firstCardVisible.value,
                     enter = slideInHorizontally(animationSpec = tween(durationMillis = 40)) { fullWidth ->
                         fullWidth
@@ -82,7 +77,9 @@ object AlcoholTest {
                         -fullWidth / 3
                     }) {
                     SwipableCard(
-                        content = "Don't drink and drive", imageId = R.drawable.crash, firstCardVisible,
+                        content = "Don't drink and drive",
+                        imageId = R.drawable.crash,
+                        firstCardVisible,
                         secondCardVisible
                     )
                 }
@@ -155,6 +152,7 @@ object AlcoholTest {
         }
     }
 
+
     @Composable
     fun CountdownCard() {
         LaunchedEffect(Unit) {
@@ -179,8 +177,9 @@ object AlcoholTest {
 
     @Composable
     fun IntroCard() {
-        Box(modifier = Modifier
-            .fillMaxSize()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
         ) {
             Text(
                 text = "Don't drink and drive", Modifier.align(Alignment.Center),
@@ -282,7 +281,7 @@ object AlcoholTest {
         }
     }
 
-    //TODO: remove hard coded tries when userManager is implemented
+    //TODO: adjust tries to try if there's only one left
     @Composable
     private fun FailedTest() {
         Box(
@@ -290,9 +289,9 @@ object AlcoholTest {
                 .fillMaxSize()
         ) {
             UserManager.saveWrongAttempt()
-            val wrongAttempts=UserManager.getWrongAttempts()
-            if(wrongAttempts<3){
-                val leftAttempts=3-wrongAttempts
+            val wrongAttempts = UserManager.getWrongAttempts()
+            if (wrongAttempts < 3) {
+                val leftAttempts = 3 - wrongAttempts
                 Text(
                     text = "Oh no. You missed. \n You're either drunk or just terrible at this. \n You've got $leftAttempts more tries.",
                     Modifier.align(Alignment.Center),
@@ -301,7 +300,7 @@ object AlcoholTest {
                         textAlign = TextAlign.Center
                     )
                 )
-            }else{
+            } else {
                 //TODO: implement what shows up after to many wrong attempts
             }
         }

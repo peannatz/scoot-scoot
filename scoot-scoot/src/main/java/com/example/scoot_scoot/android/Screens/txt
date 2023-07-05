@@ -38,7 +38,7 @@ INSERT INTO public.scooters (available, battery, latitude, longitude, tier, id, 
 INSERT INTO public.scooters (available, battery, latitude, longitude, tier, id, name) VALUES (true, 88, 53.5508, 9.9605, 0, 39, 'AlsterExpress');
 INSERT INTO public.scooters (available, battery, latitude, longitude, tier, id, name) VALUES (true, 68, 53.5519, 9.9618, 0, 40, 'FischmarktFlitzer');
 INSERT INTO public.scooters (available, battery, latitude, longitude, tier, id, name) VALUES (true, 80, 53.5497, 9.9563, 0, 41, 'ElbtunnelTurbo');
-INSERT INTO public.scooters (available, battery, latitude, longitude, tier, id, name) VALUES (true, 80, 53.5497, 9.9563, 0, 42, 'Docks Dash');
+INSERT INTO public.scooters (available, battery, latitude, longitude, tier, id, name) VALUES (true, 73, 53.5521, 9.9570, 0, 42, 'HafenHype');
 INSERT INTO public.scooters (available, battery, latitude, longitude, tier, id, name) VALUES (true, 77, 53.5500, 9.9622, 0, 43, 'KiezKing');
 INSERT INTO public.scooters (available, battery, latitude, longitude, tier, id, name) VALUES (true, 90, 53.5512, 9.9576, 0, 44, 'SchanzenSchuss');
 INSERT INTO public.scooters (available, battery, latitude, longitude, tier, id, name) VALUES (true, 66, 53.5505, 9.9613, 0, 45, 'AlsterPerle');

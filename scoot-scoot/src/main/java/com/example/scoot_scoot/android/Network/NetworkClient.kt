@@ -35,7 +35,7 @@ abstract class NetworkClient {
             return deviceUrl
         }
     }
-    protected fun postRequest(url: String, body: String): Boolean {
+    protected fun postRequest(url: String, body: String): String? {
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = body.toRequestBody(mediaType)
         val request = Request.Builder()
@@ -47,15 +47,13 @@ abstract class NetworkClient {
             val response: Response = client.newCall(request).execute()
             if (!response.isSuccessful) {
                 println("Unsuccessful response: ${response.code} ${response.message}")
-                return false
             } else {
-                println(response.message)
-                return true
+                return response.body.string()
             }
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        return false
+        return null
     }
 
     protected fun getRequest(url: String): String? {
@@ -66,7 +64,7 @@ abstract class NetworkClient {
         try {
             val response: Response = client.newCall(request).execute()
             return if (response.isSuccessful) {
-                response.body?.string()
+                response.body.string()
             } else {
                 println("Unsuccessful response: ${response.code} ${response.message}")
                 return null

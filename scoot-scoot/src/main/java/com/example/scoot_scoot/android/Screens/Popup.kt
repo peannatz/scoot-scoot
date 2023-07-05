@@ -94,9 +94,13 @@ object Popup {
                         })
                         if (showCloseButton.value) {
                             Button(
-                                onClick = { popupOpen.value = false },
+                                onClick = {
+                                    popupOpen.value = false
+                                    exoPlayer.stop()
+                                },
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd).size(40.dp),
+                                    .align(Alignment.TopEnd)
+                                    .size(40.dp),
                                 shape = RoundedCornerShape(50),
                                 contentPadding = PaddingValues(0.dp)
                             ) {

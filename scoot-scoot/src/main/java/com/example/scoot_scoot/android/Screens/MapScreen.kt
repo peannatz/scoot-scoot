@@ -78,7 +78,7 @@ object MapScreen {
             )
         }
 
-        LaunchedEffect(mvm.useLocation.value) {
+        LaunchedEffect(mvm.useLocation.value, Unit) {
             if (mvm.useLocation.value) {
                 mvm.updateLocation(cameraState)
             }
@@ -164,8 +164,8 @@ object MapScreen {
             battery = 75,
             available = true,
             location = Location(
-                latitude = 53.5511f,
-                longitude = 9.9937f
+                latitude = 53.5511,
+                longitude = 9.9937
             ),
             "BASIC"
 
@@ -177,8 +177,8 @@ object MapScreen {
             available = true,
             location =
             Location(
-                latitude = 53.5532f,
-                longitude = 9.9986f
+                latitude = 53.5532,
+                longitude = 9.9986
             ),
             "BASIC"
         ),
@@ -190,8 +190,8 @@ object MapScreen {
             available = false,
             location =
             Location(
-                latitude = 53.5503f,
-                longitude = 10.0006f
+                latitude = 53.5503,
+                longitude = 10.0006
             ),
             "PREMIUM"
         )

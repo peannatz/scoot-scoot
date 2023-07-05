@@ -30,13 +30,16 @@ object PermissionsScreen {
                 Manifest.permission.ACCESS_FINE_LOCATION,
             )
         )
+
+        //TODO: wenn man alle permissions revoked bleibt man hängen :'(
+
         Column(
             Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             if (locationPermissionsState.allPermissionsGranted) {
-                Text("Thanks! I can access your exact location :D")
+                Text("Thank you. I assure you it wasn't a mistake. Your data will be in good hands. They like touching data.")
                 UserManager.savePermissionsStatus(true)
                 navController.navigate(Screens.Map)
             } else {
@@ -47,22 +50,27 @@ object PermissionsScreen {
                 val textToShow = if (!allPermissionsRevoked) {
                     // If not all the permissions are revoked, it's because the user accepted the COARSE
                     // location permission, but not the FINE one.
-                    "Yay! Thanks for letting me access your approximate location. " +
-                            "But you know what would be great? If you allow me to know where you " +
-                            "exactly are. Thank you!"
+                    "Wow! You've allowed me to access your approximate location.\n " +
+                            "But imagine the thrill of scooting when we know your exact coordinates " +
+                            "at all times.\n " +
+                            "Only then can we fully unleash the power of scooting!\n " +
+                            "Accept the fine location permission, and let's embark on this wild adventure together!"
+
                 } else if (locationPermissionsState.shouldShowRationale) {
                     // Both location permissions have been denied
-                    "Getting your exact location is important for this app. " +
-                            "Please grant us fine location. Thank you :D"
+                    "Getting your exact location is important for this app. And our Stakeholders. And Google." +
+                            "Please grant us fine location so we can feed our families. Thank you :)"
                 } else {
-                    // First time the user sees this feature or the user doesn't want to be asked again
-                    "This feature requires location permission"
+                    "Behold, mortal! \n" +
+                            "This sacred feature demands the sacred location permission. \n" +
+                            "With it, you shall unlock the secrets of scooting. \n" +
+                            "Grant us the permission now, or forever live in the mundane realm of pedestrianism!"
                 }
 
                 val buttonText = if (!allPermissionsRevoked) {
                     "Allow precise location"
                 } else {
-                    "Request permissions"
+                    "Summon the permissions panel!"
                 }
 
                 Text(text = textToShow, textAlign = TextAlign.Center)

@@ -3,7 +3,6 @@ package com.example.scoot_scoot.android.Screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,17 +49,21 @@ object SplashScreen {
                 visible = isVisible.value,
                 exit = slideOut(targetOffset = { IntOffset(1200, 0) })
             ) {
-                Image(
+                Icon(
                     painter = painterResource(R.drawable.ic_scooter),
                     contentDescription = "",
-                    alignment = Alignment.Center,
+                    tint=MaterialTheme.colors.secondary,
                     modifier = Modifier
                         .fillMaxHeight(0.4f)
-                        .padding(40.dp),
+                        .padding(40.dp)
+                        .align(Alignment.CenterHorizontally),
+
                 )
             }
-            AnimatedVisibility(visible = isVisible.value,
-                exit = fadeOut()){
+            AnimatedVisibility(
+                visible = isVisible.value,
+                exit = fadeOut()
+            ) {
                 Text(text = "Let's get Scooting", fontSize = 40.sp)
             }
 
@@ -69,13 +74,20 @@ object SplashScreen {
         }
     }
 
-    private suspend fun waitForSplashscreenFade(navController: NavController, isVisible: MutableState<Boolean>) {
+    private suspend fun waitForSplashscreenFade(
+        navController: NavController,
+        isVisible: MutableState<Boolean>
+    ) {
         delay(500)
         isVisible.value = false;
         delay(500)
-        if(UserManager.isLoggedIn()){
-            navController.navigate(Screens.Map)
-        }else{
+        if (UserManager.isLoggedIn()) {
+            if (UserManager.getPermissionsStatus()) {
+                navController.navigate(Screens.Map)
+            } else {
+                navController.navigate(Screens.Permissions)
+            }
+        } else {
             navController.navigate(Screens.Login)
         }
     }
