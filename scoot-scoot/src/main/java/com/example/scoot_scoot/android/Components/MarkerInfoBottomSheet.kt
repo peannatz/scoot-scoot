@@ -20,6 +20,7 @@ import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,41 +31,33 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scoot_scoot.android.Components.AutocompleteSearchBox.AutocompleteSearchBox
-import com.example.scoot_scoot.android.Data.Location
-import com.example.scoot_scoot.android.Data.RideModel
+import com.example.scoot_scoot.android.Data.LastLocation
 import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.R
 import com.example.scoot_scoot.android.Repository.GoogleRepository
-import com.example.scoot_scoot.android.Repository.ScooterRepository
-import com.example.scoot_scoot.android.Repository.UserRepository
-import com.example.scoot_scoot.android.Service.PriceService.convertToCurrencyStringKm
 import com.example.scoot_scoot.android.ViewModels.MapViewModel
 import com.example.scoot_scoot.android.ViewModels.RideViewModel
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 object MarkerInfoBottomSheet {
 
-    val userRepository = UserRepository()
     val googleRepository = GoogleRepository()
-    val scooterRepository = ScooterRepository()
 
     lateinit var coroutineScope: CoroutineScope
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun MarkerInfoBottomSheet(mvm: MapViewModel = viewModel(), rvm: RideViewModel = viewModel()) {
-        val modalSheetState = mvm.infoSheetState
+    fun MarkerInfoBottomSheet(rvm: RideViewModel = viewModel()) {
+
+
         coroutineScope = rememberCoroutineScope()
 
         ModalBottomSheetLayout(
-            sheetState = modalSheetState,
+            sheetState = rvm.infoSheetState,
             scrimColor = Color.Unspecified,
             sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
             sheetBackgroundColor = MaterialTheme.colors.background,
@@ -74,14 +67,14 @@ object MarkerInfoBottomSheet {
     }
 
     @Composable
-    fun RideInfo(mvm: MapViewModel = viewModel(), rvm: RideViewModel = viewModel()) {
+    fun RideInfo(rvm: RideViewModel = viewModel()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(horizontal = 40.dp, vertical = 20.dp)
                 .fillMaxWidth()
         ) {
-            Text(text = mvm.selectedScooter.value!!.name, fontSize = 30.sp)
+            Text(text = rvm.selectedScooter.value!!.name, fontSize = 30.sp)
 
             if (rvm.kmMode) {
                 RidingInfoKmMode()
@@ -91,45 +84,36 @@ object MarkerInfoBottomSheet {
         }
     }
 
-    fun GetRouteAndDistance(mvm: MapViewModel, rvm: RideViewModel) {
-        mvm.viewModelScope.launch {
-            val latlng =
-                LatLng(mvm.lastLocation.value!!.latitude, mvm.lastLocation.value!!.longitude)
-            val route = GoogleRepository().getRoute(latlng, rvm.destination.value.placeId)
-            if (route != null) {
-                rvm.route = route
-            }
-        }
-    }
-
     //TODO: Destination text hübscher machen
 
+    @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun RidingInfoKmMode(mvm: MapViewModel = viewModel(), rvm: RideViewModel = viewModel()) {
+    fun RidingInfoKmMode(rvm: RideViewModel = viewModel()) {
         if (rvm.destinationSelection.value) {
             Spacer(modifier = Modifier.size(40.dp))
 
             AutocompleteSearchBox(
                 Modifier.fillMaxWidth(0.8f),
-                { GetRouteAndDistance(mvm, rvm) },
-                mvm.lastLocation.value!!
+                {
+                    rvm.startLocation.value = LastLocation.value.value
+                    rvm.GetRouteAndDistance()
+                },
+                LastLocation.value.collectAsState().value
             )
+
             if (rvm.route.distanceMeters != 0) Text(
-                text = convertToCurrencyStringKm(
-                    rvm.route.distanceMeters,
-                    mvm.selectedScooter.value!!.tierType.minutePrice
-                ),
+                text = rvm.convertToCurrencyStringKm(),
                 fontSize = 40.sp
             )
             Button(onClick = {
-                rvm.destinationSelection.value=false
-                startRide(mvm, rvm)
+                rvm.destinationSelection.value = false
+                rvm.startRide()
             })
             {
                 Text(text = "Go")
             }
         } else {
-            rvm.getAddressFromLastLocation(mvm)
+            rvm.getAddressFromLastLocation()
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
@@ -165,31 +149,26 @@ object MarkerInfoBottomSheet {
                 }
             }
 
+            //Fahrtpreis
+            Text(
+                text = rvm.convertToCurrencyStringKm(),
+                style = TextStyle(fontSize = 30.sp),
+                modifier = Modifier.padding(20.dp)
+            )
 
+            Button(onClick = {
+                rvm.endRide()
+                coroutineScope.launch { rvm.infoSheetState.hide() }
+            }) {
+                Text(text = "Stop scooting pls")
+            }
         }
-
-        //Fahrtpreis
-        Text(
-            text = convertToCurrencyStringKm(
-                rvm.route.distanceMeters,
-                mvm.selectedScooter.value!!.tierType.minutePrice
-            ),
-            style = TextStyle(fontSize = 30.sp),
-            modifier = Modifier.padding(20.dp)
-        )
-
-        Button(onClick = {
-            endRide(rvm, mvm)
-        }) {
-            Text(text = "Stop scooting pls")
-        }
-
     }
 
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun RidingInfoMinuteMode(rvm: RideViewModel = viewModel(), mvm: MapViewModel = viewModel()) {
+    fun RidingInfoMinuteMode(rvm: RideViewModel = viewModel()) {
 
         LaunchedEffect(Unit) {
             while (rvm.riding) {
@@ -228,24 +207,18 @@ object MarkerInfoBottomSheet {
 
         //Fahrtpreis
         Text(
-            text = convertToCurrencyStringMin(rvm, mvm),
+            text = rvm.convertToCurrencyStringMin(),
             style = TextStyle(fontSize = 30.sp),
             modifier = Modifier.padding(20.dp)
         )
 
         Button(onClick = {
-
+            rvm.endRide()
+            coroutineScope.launch { rvm.infoSheetState.hide() }
         }) {
             Text(text = "Stop scooting pls")
         }
 
-    }
-
-    fun convertToCurrencyStringMin(rvm: RideViewModel, mvm: MapViewModel): String {
-        val euros =
-            rvm.passedTimeInMinutes * mvm.selectedScooter.value!!.tierType.kilometrePrice / 100.0
-        val formattedString = String.format("%.2f", euros)
-        return "$formattedString€"
     }
 
     @Composable
@@ -318,8 +291,10 @@ object MarkerInfoBottomSheet {
                 Button(
                     onClick = {
                         if (!rvm.kmMode) {
-                            startRide(mvm, rvm)
+                            rvm.startRide()
                         }
+                        rvm.selectedScooter = mvm.selectedScooter
+                        UserManager.saveScooterId(rvm.selectedScooter.value!!.id)
                         rvm.riding = true
                     },
                     Modifier.align(Alignment.Center)
@@ -340,69 +315,6 @@ object MarkerInfoBottomSheet {
                 }
             }
         }
-    }
-
-    fun startRide(mvm: MapViewModel, rvm: RideViewModel) {
-        UserManager.saveStartTime()
-        rvm.getStartTime()
-        rvm.viewModelScope.launch {
-            val userId = UserManager.getUserId()
-            val user = userRepository.getUserById(userId)!!
-            val startLocation = Location(
-                mvm.lastLocation.value!!.latitude,
-                mvm.lastLocation.value!!.longitude
-            )
-            val originAddress = googleRepository.getAddressFromLatLng(
-                Location(
-                    mvm.lastLocation.value!!.latitude,
-                    mvm.lastLocation.value!!.longitude
-                )
-            )
-            println(originAddress)
-            val newRide = RideModel(
-                startTime = UserManager.getStartTime(),
-                startLocation = startLocation
-            )
-            user.rides.add(newRide)
-            userRepository.updateUser(userId, user)
-        }
-        rvm.GetPassedTime()
-    }
-
-    //TODO: evtl popup nach ride ende?
-
-    @OptIn(ExperimentalMaterialApi::class)
-    fun endRide(rvm: RideViewModel, mvm: MapViewModel) {
-        rvm.viewModelScope.launch {
-            val userId = UserManager.getUserId()
-            val user = userRepository.getUserById(userId)!!
-            val endLocation: Location
-            val price: Int
-            if (rvm.kmMode) {
-                val destinationLatLng =
-                    googleRepository.getPlaceLatLng(rvm.destination.value.placeId)
-                endLocation = Location(destinationLatLng.latitude, destinationLatLng.longitude)
-                price =
-                    rvm.route.distanceMeters / 1000 * mvm.selectedScooter.value!!.tierType.minutePrice
-            } else {
-                val latitude = Random.nextDouble(mvm.latitudeRange[0], mvm.latitudeRange[1])
-                val longitude = Random.nextDouble(mvm.longitudeRange[0], mvm.longitudeRange[1])
-                endLocation = Location(latitude, longitude)
-                price = rvm.passedTimeInMinutes * mvm.selectedScooter.value!!.tierType.minutePrice
-            }
-            user.rides.last().apply {
-                this.endLocation = endLocation
-                this.price = price
-                this.rideLength = rvm.passedTimeInSeconds.toInt()
-            }
-            userRepository.updateUser(userId, user)
-            val updatedScooter = mvm.selectedScooter.value
-            updatedScooter!!.location = endLocation
-            println()
-            scooterRepository.updateScooterById(mvm.selectedScooter.value!!.id, updatedScooter)
-
-        }
-        coroutineScope.launch { mvm.infoSheetState.hide() }
     }
 }
 

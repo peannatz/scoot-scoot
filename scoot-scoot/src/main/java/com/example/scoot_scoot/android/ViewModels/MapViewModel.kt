@@ -1,7 +1,6 @@
 package com.example.scoot_scoot.android.ViewModels
 
 import android.annotation.SuppressLint
-import android.location.Location
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
@@ -15,6 +14,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.scoot_scoot.android.Data.AutoCompleteResult
+import com.example.scoot_scoot.android.Data.LastLocation
+import com.example.scoot_scoot.android.Data.Location
 import com.example.scoot_scoot.android.Data.RouteModel
 import com.example.scoot_scoot.android.Data.ScooterModel
 import com.example.scoot_scoot.android.Data.UserManager
@@ -47,9 +48,6 @@ class MapViewModel() : ViewModel() {
     var selectedScooter: MutableState<ScooterModel?> = mutableStateOf(null)
     var lastLocation: MutableState<Location?> = mutableStateOf(null)
 
-    val latitudeRange = listOf(53.395, 53.729)
-    val longitudeRange = listOf(9.712, 10.327)
-
     var useLocation = mutableStateOf(true)
     lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -70,7 +68,8 @@ class MapViewModel() : ViewModel() {
     ) {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
-                lastLocation = mutableStateOf(location)
+                val loca=Location(location.latitude, location.longitude)
+                LastLocation.updateSharedVariable(loca)
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 val cameraPosition = CameraPosition.Builder()
                     .target(currentLatLng)

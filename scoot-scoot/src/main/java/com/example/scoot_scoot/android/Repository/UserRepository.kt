@@ -20,6 +20,17 @@ class UserRepository {
         }
     }
 
+    suspend fun checkForRunningRides(id: Int): Boolean {
+        val user: UserData
+        withContext(Dispatchers.IO) {
+            user = UserClient.getUserByID(id)!!
+        }
+        if (user.rides.size > 0 && user.rides.last().rideLength == null) {
+            return true
+        }
+        return false
+    }
+
     suspend fun getUserById(id: Int): UserData? {
         return withContext(Dispatchers.IO) {
             UserClient.getUserByID(id)

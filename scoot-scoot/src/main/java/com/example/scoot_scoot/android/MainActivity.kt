@@ -13,8 +13,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.Screens.AlcoholTest.AlcoholTest
-import com.example.scoot_scoot.android.Screens.Balance.Balance
+import com.example.scoot_scoot.android.Screens.BalanceScreen.BalanceScreen
 import com.example.scoot_scoot.android.Screens.Dashboard.Dashboard
+import com.example.scoot_scoot.android.Screens.HelpScreen.HelpScreen
 import com.example.scoot_scoot.android.Screens.LoginScreen.LoginScreen
 import com.example.scoot_scoot.android.Screens.MapScreen.MapScreen
 import com.example.scoot_scoot.android.Screens.PermissionsScreen.PermissionsScreen
@@ -62,7 +63,12 @@ class MainActivity : ComponentActivity() {
             composable(Screens.AlcTest) { AlcoholTest(navController) }
             composable(Screens.Splash) { SplashScreen(navController) }
             composable(Screens.Permissions) { PermissionsScreen(navController) }
-            composable(Screens.Balance) { Balance(navController) }
+            composable(Screens.Balance) {
+                BalanceScreen(
+                    navController
+                )
+            }
+            composable(Screens.Help) { HelpScreen(navController) }
         }
 
     }

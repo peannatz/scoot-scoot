@@ -1,10 +1,11 @@
 package com.example.scoot_scoot.android.ViewModels
 
-import android.location.Location
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.scoot_scoot.android.Data.AutoCompleteResult
+import com.example.scoot_scoot.android.Data.Location
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.RectangularBounds
@@ -14,10 +15,12 @@ import kotlinx.coroutines.launch
 
 class AutocompleteViewModel() : ViewModel() {
     val locationAutofill = mutableStateListOf<AutoCompleteResult>()
+    val autoCompleted = mutableStateOf(false)
     fun searchPlaces(query: String, placesClient: PlacesClient, lastLocation: Location) {
         if (query.length <= 3) {
             return
         }
+
         val autocompleteSessionToken = AutocompleteSessionToken.newInstance()
 
         val bias = RectangularBounds.newInstance(
@@ -34,7 +37,6 @@ class AutocompleteViewModel() : ViewModel() {
                 100
             )!!
         )
-        locationAutofill.clear()
         viewModelScope.launch {
             val request = FindAutocompletePredictionsRequest
                 .builder()
@@ -45,15 +47,18 @@ class AutocompleteViewModel() : ViewModel() {
             placesClient
                 .findAutocompletePredictions(request)
                 .addOnSuccessListener { response ->
-                    val predictionLimit = 3
+                    val predictionLimit = 1
+                    val uniquePredictions = response.autocompletePredictions
+                        .distinctBy { it.placeId }
+                        .take(predictionLimit)
 
-                    locationAutofill += response.autocompletePredictions
-                        .take(predictionLimit).map {
-                            AutoCompleteResult(
-                                it.getFullText(null).toString(),
-                                it.placeId
-                            )
-                        }
+                    locationAutofill.clear()
+                    locationAutofill.addAll(uniquePredictions.map {
+                        AutoCompleteResult(
+                            it.getFullText(null).toString(),
+                            it.placeId
+                        )
+                    })
                 }
                 .addOnFailureListener {
                     it.printStackTrace()
