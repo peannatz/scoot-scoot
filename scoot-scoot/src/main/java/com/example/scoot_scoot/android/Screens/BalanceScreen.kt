@@ -51,19 +51,19 @@ import com.example.scoot_scoot.android.Repository.UserRepository
 import com.example.scoot_scoot.android.Service.PriceService
 import kotlinx.coroutines.launch
 
-object Balance {
+object BalanceScreen {
 
     @OptIn(ExperimentalComposeUiApi::class)
     @SuppressLint("CoroutineCreationDuringComposition")
     @Composable
-    fun Balance(navController: NavController) {
+    fun BalanceScreen(navController: NavController) {
         val userRepository = UserRepository()
         val userId = UserManager.getUserId()
         var user = remember {mutableStateOf(UserData())}
         var userBalance = remember { mutableIntStateOf(0) }
         val coroutineScope = rememberCoroutineScope()
         coroutineScope.launch {
-            user = mutableStateOf(userRepository.getUserById(userId))
+            user = mutableStateOf(userRepository.getUserById(userId)!!)
             userBalance.intValue = user.value.credit
         }
         val openDialog = remember { mutableStateOf(false) }
@@ -140,7 +140,7 @@ object Balance {
                                                 userId,
                                                 user.value
                                             )
-                                            user.value=userRepository.getUserById(userId)
+                                            user.value=userRepository.getUserById(userId)!!
                                         }
                                         openDialog.value = false
                                     }) {

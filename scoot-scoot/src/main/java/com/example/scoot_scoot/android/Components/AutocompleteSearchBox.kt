@@ -1,10 +1,8 @@
 package com.example.scoot_scoot.android.Components
 
-import android.location.Location
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,13 +22,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scoot_scoot.android.BuildConfig
+import com.example.scoot_scoot.android.Data.Location
 import com.example.scoot_scoot.android.ViewModels.AutocompleteViewModel
 import com.example.scoot_scoot.android.ViewModels.RideViewModel
 import com.google.android.libraries.places.api.Places
@@ -62,7 +60,7 @@ object AutocompleteSearchBox {
             }
         }
 
-        var destinationText =
+        val destinationText =
             remember { mutableStateOf(TextFieldValue(rvm.destination.value.address)) }
 
         val keyboardController = LocalSoftwareKeyboardController.current
@@ -79,7 +77,7 @@ object AutocompleteSearchBox {
         {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                reverseLayout = true
+                reverseLayout = true,
             ) {
                 itemsIndexed(avm.locationAutofill) { _, item ->
                     Row(
@@ -90,15 +88,17 @@ object AutocompleteSearchBox {
                                 rvm.destination.value = item
                                 destinationText.value = TextFieldValue(item.address)
                                 onTextChange()
-                                avm.locationAutofill.clear()
                                 keyboardController?.hide()
+                                avm.locationAutofill.clear()
+                                avm.autoCompleted.value = true
                             }
                     ) {
                         Text(item.address)
                     }
                 }
             }
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(30.dp))
+
         }
 
         TextField(
@@ -107,7 +107,10 @@ object AutocompleteSearchBox {
             {
                 destinationText.value = it
                 rvm.destination.value.address = it.text
-                avm.searchPlaces(it.text, placesClient!!, lastLocation)
+                if (!avm.autoCompleted.value) {
+                    avm.searchPlaces(it.text, placesClient!!, lastLocation)
+                    avm.autoCompleted.value = false
+                }
             }, Modifier
                 .fillMaxWidth(0.8f)
                 .run { modifier }
@@ -120,5 +123,6 @@ object AutocompleteSearchBox {
                 backgroundColor = MaterialTheme.colors.background
             )
         )
+        Spacer(Modifier.height(30.dp))
     }
 }

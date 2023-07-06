@@ -16,6 +16,7 @@ object UserManager {
     private const val KEY_LOCATION_PERMISSIONS = "location_permissions_granted"
     private const val KEY_USER_TUTORIAL = "tutorial"
     private const val KEY_RIDE_START = "ride_Start_time"
+    private const val KEY_SCOOTER = "scooter"
 
     private const val KEY_FIRST_ATTEMPT_TIMESTAMP = "lastAttemptTimestamp"
     private const val KEY_WRONG_ATTEMPTS = "amountWrongAttempts"
@@ -38,8 +39,18 @@ object UserManager {
     }
 
     fun getPermissionsStatus(): Boolean {
+        println("Permission: ${sharedPreferences.getBoolean(KEY_LOCATION_PERMISSIONS, false)}")
         return sharedPreferences.getBoolean(KEY_LOCATION_PERMISSIONS, false)
     }
+
+    fun saveScooterId(id: Int) {
+        sharedPreferences.edit().putInt(KEY_SCOOTER, id).apply()
+    }
+
+    fun getScooterId(): Int {
+        return sharedPreferences.getInt(KEY_SCOOTER, -1)
+    }
+
 
     //TIME
 

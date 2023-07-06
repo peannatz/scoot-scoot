@@ -36,4 +36,12 @@ class ScooterRepository {
             ScooterClient.getScootersByBattery(battery)
         }
     }
+
+    suspend fun updateScooterById(id: Int, scooter: ScooterModel) {
+        return withContext(Dispatchers.IO) {
+            ScooterClient.updateScooterbyId(id, scooter)
+        }
+    }
+
+
 }

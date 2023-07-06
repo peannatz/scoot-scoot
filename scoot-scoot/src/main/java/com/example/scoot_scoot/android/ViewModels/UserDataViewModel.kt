@@ -19,7 +19,6 @@ abstract class UserDataViewModel(private val userId: Int? = null) : ViewModel() 
     protected val userRepository = UserRepository()
 
     private val _fetchedUserData = MutableLiveData<UserData>()
-    val fetchedUserData: LiveData<UserData> get() = _fetchedUserData
     var userData = UserData()
 
     init {
@@ -32,7 +31,7 @@ abstract class UserDataViewModel(private val userId: Int? = null) : ViewModel() 
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 try {
-                    userData = userRepository.getUserById(userId!!)
+                    userData = userRepository.getUserById(userId!!)!!
 
                 } catch (e: Exception) {
                     TODO("Error Handling")

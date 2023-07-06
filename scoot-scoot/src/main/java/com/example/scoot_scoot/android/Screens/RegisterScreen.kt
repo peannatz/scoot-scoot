@@ -134,6 +134,18 @@ object RegisterScreen {
             }, enabled = rvm.isEnabledRegisterButton.value) {
                 Text(text = "Register")
             }
+            ClickableText(
+                //TODO: Find a better font
+                text = AnnotatedString("Please no I want to sign up"),
+                onClick = { navController.navigate(Screens.Login) },
+                modifier = Modifier
+                    .padding(20.dp),
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    textDecoration = TextDecoration.Underline,
+                    color = MaterialTheme.colors.onBackground
+                )
+            )
         }
         if (popupVisible.value) {
             Popup.Show(popupVisible)

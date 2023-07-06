@@ -7,8 +7,8 @@ import java.util.Date
 data class RideModel(
     var id: Int? = null,
     var startTime: Date,
-    var rideLength: Int = 0,
-    var price: Int = 0,
+    var rideLength: Int? = null,
+    var price: Int? = null,
     var startLocation: Location,
     var endLocation: Location? = null
 )

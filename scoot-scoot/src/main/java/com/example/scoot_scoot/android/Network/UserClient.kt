@@ -19,8 +19,8 @@ object UserClient : NetworkClient() {
         val url = "${baseUrl}user/add"
         val jsonPayload = gson.toJson(userData)
 
-        val response=postRequest(url, jsonPayload)
-        if(response!=null){
+        val response = postRequest(url, jsonPayload)
+        if (response != null) {
             return gson.fromJson(response, UserData::class.java)
         }
         return UserData()
@@ -28,11 +28,15 @@ object UserClient : NetworkClient() {
 
     //Get User
 
-    fun getUserByID(id: Int): UserData {
+    fun getUserByID(id: Int): UserData? {
 
         val url = "${baseUrl}user/getbyId/$id"
         val userJson = getRequest(url)
-        return gson.fromJson(userJson, UserData::class.java)
+        return if (userJson != null) {
+            gson.fromJson(userJson, UserData::class.java)
+        } else {
+            null
+        }
     }
 
     fun getUserByEmail(email: String, password: String): UserData? {
@@ -49,9 +53,9 @@ object UserClient : NetworkClient() {
     fun updateUser(id: Int, userData: UserData): Boolean {
         val url = "${baseUrl}user/update/$id"
         val jsonPayload = gson.toJson(userData)
-        val response=postRequest(url, jsonPayload)
+        val response = postRequest(url, jsonPayload)
 
-        if(response!=null){
+        if (response != null) {
             return true
         }
         return false

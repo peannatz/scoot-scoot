@@ -1,6 +1,7 @@
 package com.example.scoot_scoot.android.Data
 
-object Tier {
-    var Basic = TierModel(0, 2, 5)
-    var Premium = TierModel(1, 10, 20)
-}
+data class Tier(
+    val tierType: String,
+    val minutePrice: Int,
+    val kilometrePrice: Int
+)

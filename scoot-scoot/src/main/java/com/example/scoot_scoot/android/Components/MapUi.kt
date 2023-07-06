@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.Components.AutocompleteSearchBox.AutocompleteSearchBox
 import com.example.scoot_scoot.android.R
@@ -29,10 +30,11 @@ object MapUi {
     @Composable
     fun MapUi(
         navController: NavController,
-        mvm: MapViewModel,
-        fusedLocationClient: FusedLocationProviderClient,
         cameraState: CameraPositionState,
+        mvm: MapViewModel = viewModel(),
     ) {
+
+
         Box(
 
             modifier = Modifier.fillMaxSize()
@@ -58,7 +60,7 @@ object MapUi {
 
             FloatingActionButton(
                 onClick = {
-                    MapScreen.updateLocation(fusedLocationClient, cameraState)
+                    mvm.updateLocation(cameraState)
                     mvm.useLocation.value = true;
                 },
                 shape = RoundedCornerShape(50),
@@ -75,7 +77,7 @@ object MapUi {
                     modifier = Modifier.size(30.dp)
                 )
             }
-           // AutocompleteSearchBox(Modifier.align(Alignment.BottomCenter), {}, mvm.lastLocation.value!!)
+            // AutocompleteSearchBox(Modifier.align(Alignment.BottomCenter), {}, mvm.lastLocation.value!!)
         }
     }
 
