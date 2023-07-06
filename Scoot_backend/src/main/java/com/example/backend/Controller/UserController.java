@@ -39,7 +39,7 @@ public class UserController {
     @GetMapping("/getByEmail/{email}")
     public User getByEmail(@PathVariable String email, @RequestParam String password){
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("There is no user with the specified email"));
+        User user = userRepository.findByEmail(email);
         if (Objects.equals(user.getPassword(), password)) {
             return user;
         } else {

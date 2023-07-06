@@ -2,7 +2,9 @@ package com.example.backend.Entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +29,13 @@ public class User {
     @NotNull
     @Column(columnDefinition = "integer DEFAULT 0")
     private int credit;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @JoinTable(
+            name="users_roles",
+            joinColumns={@JoinColumn(name="USER_ID", referencedColumnName="ID")},
+            inverseJoinColumns={@JoinColumn(name="ROLE_ID", referencedColumnName="ID")})
+    private List<Role> roles = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
     List<Ride> rides;
@@ -93,5 +102,13 @@ public class User {
 
     public void setCredit(int credit) {
         this.credit = credit;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }
