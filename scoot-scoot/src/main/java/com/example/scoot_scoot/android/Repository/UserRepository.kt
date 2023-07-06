@@ -20,7 +20,7 @@ class UserRepository {
         }
     }
 
-    suspend fun getUserById(id: Int): UserData {
+    suspend fun getUserById(id: Int): UserData? {
         return withContext(Dispatchers.IO) {
             UserClient.getUserByID(id)
         }

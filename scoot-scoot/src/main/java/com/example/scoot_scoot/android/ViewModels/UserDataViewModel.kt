@@ -32,7 +32,7 @@ abstract class UserDataViewModel(private val userId: Int? = null) : ViewModel() 
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 try {
-                    userData = userRepository.getUserById(userId!!)
+                    userData = userRepository.getUserById(userId!!)!!
 
                 } catch (e: Exception) {
                     TODO("Error Handling")

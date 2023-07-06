@@ -2,6 +2,7 @@ package com.example.scoot_scoot.android.Network
 
 import com.example.scoot_scoot.android.BuildConfig
 import com.example.scoot_scoot.android.Components.AutocompleteSearchBox.placesClient
+import com.example.scoot_scoot.android.Data.Location
 import com.example.scoot_scoot.android.Data.RouteModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Tasks
@@ -68,6 +69,29 @@ object GoogleClient {
         } else {
             return null
         }
+    }
+
+    fun requestAddressFromLatLng(location: Location): String? {
+        val url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
+        val fullUrl =
+            "https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.latitude},${location.longitude}&key=${BuildConfig.MAPS_API_KEY}"
+        val request = Request.Builder().url(fullUrl).build()
+        try {
+            val response: Response = okHttpClient.newCall(request).execute()
+            if (!response.isSuccessful) {
+                println("Unsuccessful response: ${response.code} ${response.message}")
+                return null
+            } else {
+                val data = gson.fromJson(response.body.string(), Map::class.java) as Map<String, Any>
+                val results = data["results"] as List<Map<String, Any>>
+                val firstResult = results[0] as Map<String, Any>
+                val formattedAddress = firstResult["formatted_address"] as String
+                return formattedAddress
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
     }
 
 

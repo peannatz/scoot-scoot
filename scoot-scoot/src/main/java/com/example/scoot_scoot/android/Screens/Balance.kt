@@ -63,7 +63,7 @@ object Balance {
         var userBalance = remember { mutableIntStateOf(0) }
         val coroutineScope = rememberCoroutineScope()
         coroutineScope.launch {
-            user = mutableStateOf(userRepository.getUserById(userId))
+            user = mutableStateOf(userRepository.getUserById(userId)!!)
             userBalance.intValue = user.value.credit
         }
         val openDialog = remember { mutableStateOf(false) }
@@ -140,7 +140,7 @@ object Balance {
                                                 userId,
                                                 user.value
                                             )
-                                            user.value=userRepository.getUserById(userId)
+                                            user.value=userRepository.getUserById(userId)!!
                                         }
                                         openDialog.value = false
                                     }) {

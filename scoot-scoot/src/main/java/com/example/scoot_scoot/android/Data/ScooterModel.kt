@@ -1,11 +1,15 @@
 package com.example.scoot_scoot.android.Data
 
+import com.google.gson.annotations.Expose
+
 
 data class ScooterModel(
-    val id: Long,
+    val id: Int,
     val name: String,
     val battery: Int,
     val available: Boolean,
-    val location: Location,
+    var location: Location,
+
+    @Expose(serialize = false)
     val tierType: Tier,
 )

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.scoot_scoot.android.Data.UserManager
 import com.example.scoot_scoot.android.R
+import com.example.scoot_scoot.android.Repository.UserRepository
 import kotlinx.coroutines.delay
 
 object SplashScreen {
@@ -52,13 +53,13 @@ object SplashScreen {
                 Icon(
                     painter = painterResource(R.drawable.ic_scooter),
                     contentDescription = "",
-                    tint=MaterialTheme.colors.secondary,
+                    tint = MaterialTheme.colors.secondary,
                     modifier = Modifier
                         .fillMaxHeight(0.4f)
                         .padding(40.dp)
                         .align(Alignment.CenterHorizontally),
 
-                )
+                    )
             }
             AnimatedVisibility(
                 visible = isVisible.value,
@@ -81,7 +82,11 @@ object SplashScreen {
         delay(500)
         isVisible.value = false;
         delay(500)
-        if (UserManager.isLoggedIn()) {
+        val userRepository = UserRepository()
+
+        //Der letzte Part ist da um bei einer leeren Datenbank keine Fehler zu bekommen. Muss nochmal anders geregelt werden
+        //TODO: find a better fix
+        if (UserManager.isLoggedIn() && userRepository.getUserById(UserManager.getUserId()) != null) {
             if (UserManager.getPermissionsStatus()) {
                 navController.navigate(Screens.Map)
             } else {

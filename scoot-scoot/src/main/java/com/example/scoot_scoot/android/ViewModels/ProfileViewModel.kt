@@ -19,7 +19,7 @@ class ProfileViewModel : UserDataViewModel() {
     init {
         CoroutineScope(Dispatchers.IO).launch {
             val userId=UserManager.getUserId()
-            val fetchedUser = userRepository.getUserById(userId)
+            val fetchedUser = userRepository.getUserById(userId)!!
             updateUser(fetchedUser)
             userFetched.value = true
             nameData = UserDataModel("Name", name, nameEdited) { validateName() }
