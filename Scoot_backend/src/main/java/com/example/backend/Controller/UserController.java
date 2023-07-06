@@ -28,8 +28,7 @@ public class UserController {
 
     @PostMapping("/add")
     public User addUser(@RequestBody User user){
-        userRepository.save(user);
-        return user;
+        return userService.saveUser(user);
     }
 
     @GetMapping("/getbyId/{id}")
