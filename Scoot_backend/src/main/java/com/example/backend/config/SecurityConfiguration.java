@@ -29,7 +29,7 @@ public class SecurityConfiguration {
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) -> {
                     try {
-                        authorize.requestMatchers("/user/**").permitAll()
+                        authorize.requestMatchers("/**").permitAll()
                                 .requestMatchers("/scooter/**").hasRole("ADMIN")
                                 .and()
                                 .httpBasic();

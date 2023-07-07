@@ -23,10 +23,10 @@ abstract class NetworkClient {
     // Use usbUrl, when connecting using only a usb connection.
     // Use adb reverse tcp:8080 tcp:8080 to forward the port to the device.
 
-    protected val deviceUrl = "http://192.168.6.204:8080/"
+    protected val deviceUrl = "http://192.168.6.236:8080/"
     protected val usbUrl = "http://127.0.0.1:8080/"
     protected val emulatorUrl = "http://10.0.2.2:8080/"
-    protected val baseUrl = chooseUrl()
+    protected val baseUrl = usbUrl
 
     private fun chooseUrl():String {
         if (Build.PRODUCT.contains("sdk") || Build.MODEL.contains("emu")) {
