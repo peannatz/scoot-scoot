@@ -3,6 +3,7 @@ package com.example.backend.Service;
 import com.example.backend.DTO.ScooterDto;
 import com.example.backend.DTO.TierTypeDto;
 import com.example.backend.Entity.Scooter;
+import com.example.backend.Enum.TierType;
 import com.example.backend.Repository.ScooterRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -41,8 +42,10 @@ public class ScooterService {
 
     public void updateScooter(long id, Scooter scooter){
         Scooter existingScooter = scooterRepository.findById(id).orElseThrow(() -> new RuntimeException("Cant find Scooter with the given Id"));
+        TierType tier = existingScooter.getTier();
         modelMapper.map(scooter, existingScooter, "id");
         existingScooter.setId(id);
+        existingScooter.setTier(tier);
         scooterRepository.save(existingScooter);
     }
 }
